@@ -1,0 +1,67 @@
+{% extends 'admin/statistics/base.html' %}
+{% load dashboard cache %}
+
+
+{% block content-stats %}
+
+	{% cache 4000 mission_stat request.GET.preset request.GET.start request.GET.end %}
+	<div class="row">
+		<div class="col-12">
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">고객 미션 전환</h3>
+			{% chart 'MissionActionDashboard' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">미션 건수 <small>(미션요청일 기준)</small></h3>
+			{% chart 'MissionDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">미션 입찰 건수 <small>(입찰일 기준)</small></h3>
+			{% chart 'BidDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">미션당 입찰 건수 <small>(미션요청일 기준)</small></h3>
+			{% chart 'MissionBidCountDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">가입 후 최초 완료미션 건수 <small>(미션완료일 기준)</small></h3>
+			{% chart 'FirstDoneMissionDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">미션이 매칭전에 취소되는 사유 <small>(취소일 기준)</small></h3>
+			{% chart 'BiddingMissionCanceledDetailDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">미션이 수행중에 취소되는 사유 <small>(취소일 기준)</small></h3>
+			{% chart 'InActionMissionCanceledDetailDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">수행중인 미션의 취소 주체 <small>(취소일 기준)</small></h3>
+			{% chart 'MissionCanceledUserDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">리뷰 <small>(작성일 기준)</small></h3>
+			{% chart 'ReviewDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">신고 내용</h3>
+			{% chart 'ReportChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+		</div>
+	</div>
+	{% endcache %}
+
+{% endblock %}

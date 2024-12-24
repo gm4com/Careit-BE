@@ -1,0 +1,118 @@
+{% load internal %}
+
+<div class="row">
+	<div class="col-12">
+		<div class="card" id="anytalk">
+			<div class="card-header">
+				애니톡 내역
+			</div>
+			<div class="card-body bg-light">
+				{% for talk in talks %}
+					<div class="message-body col-12 {% if bid.helper.user.id == talk.user.id %}helper{% else %}customer{% endif %}">
+						<label class="user">{{ talk.user }}</label>
+						<div>
+							{% if talk.file %}
+								<a href="{{ talk.file }}">
+									{% if talk.file|lower|endswith:".jpg" or  talk.file|lower|endswith:".gif" or talk.file|lower|endswith:".png" %}
+										<img src="{{ talk.file }}" class="file" />
+									{% else %}
+										{{ talk.file_name }}
+									{% endif %}
+								</a>
+							{% else %}
+								<div class="message btn text-left">
+									{{ talk.message }}<br/>
+									{% if talk.request_type %}
+										<div class="request bg-white">
+											{% if talk.request_detail %}
+												{{ talk.request_detail }}
+												<hr/>
+											{% endif %}
+											{% if talk.response == 'cancel' %}
+												요청 취소됨
+											{% elif talk.response == 'waiting' %}
+												응답 대기중
+											{% elif talk.response == 'accept' %}
+												요청 수락됨
+											{% elif talk.response == 'deny' %}
+												요청 거절됨
+											{% endif %}
+										</div>
+									{% endif %}
+								</div>
+								{% if talk.unread_users %}
+									<span class="unread text-warning">{{ talk.unread_users|length }}</span>
+								{% endif %}
+							{% endif %}
+							<small class="sent_datetime text-secondary text-right">
+								{{ talk.sent_datetime|localtime }}
+							</small>
+						</div>
+{#					<span>{{ talk }}</span>#}
+					</div>
+				{% empty %}
+					<div class="no-messages">
+						애니톡 대화 내역이 없습니다.
+					</div>
+				{% endfor %}
+				{% if bid.state == 'done' %}
+					<hr/>
+					<p class="text-center">대화방이 종료되었습니다.</p>
+				{% endif %}
+			</div>
+		</div>
+		{% if not is_end %}
+			<a href="/admin/missions/bid/{{ bid.id }}/force_close_anytalk/" class="btn btn-danger pull-right mt-2">애니톡 강제종료</a>
+		{% endif %}
+	</div>
+</div>
+
+<style>
+	#anytalk .no-messages {
+		padding: 20px;
+		text-align: center;
+	}
+	#anytalk .message-body {
+		display: flex;
+		margin: 12px 0;
+	}
+	#anytalk .message-body .message {
+		cursor: default;
+	}
+	#anytalk .message-body.helper .message {
+		background-color: #0d5aa7;
+		color: #fff;
+	}
+	#anytalk .message-body.customer .message {
+		background-color: #ffe761;
+		color: #000;
+	}
+	#anytalk .message-body .message .request {
+		background-color: #fff;
+		color: #000;
+		padding: 10px;
+		margin-top: 10px;
+		border-radius: 5px;
+	}
+	#anytalk .user {
+		word-break: keep-all;
+		white-space: nowrap;
+		line-height: 3;
+		margin-right: 10px;
+	}
+	#anytalk img.file {
+		max-width: 100%;
+		max-height: 200px;
+	}
+	#anytalk .unread, #anytalk .sent_datetime {
+		vertical-align: bottom;
+	}
+	#anytalk .sent_datetime {
+		word-break: keep-all;
+		white-space: nowrap;
+{#		margin-left: 6px;#}
+	}
+{#	#anytalk label, p {#}
+{#		float: left;#}
+{#	}#}
+</style>

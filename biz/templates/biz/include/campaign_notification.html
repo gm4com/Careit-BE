@@ -1,0 +1,30 @@
+<!-- Card -->
+<div class="card d-print-none">
+    <!-- Header -->
+    <div class="card-header">
+        <h5 class="card-header-title">주의 사항</h5>
+    </div>
+    <!-- End Header -->
+    <hr class="my-0">
+    <!-- Body -->
+    <div class="card-body">
+        <div class="pb-5">
+            <h3 class="text-secondary">캠페인 정보</h3>
+            <p>* 게시 종료일이 없는 경우 캠페인은 계속 노출이 됩니다.</p>
+        </div>
+        <div class="pb-5">
+            <h3 class="text-secondary">배너 이미지 권장 사이즈</h3>
+            {% for banner in banner_sizes %}
+                <p>
+                    * {{ banner.location.1 }} = {{ banner.image_size.0 }}<small>px</small> X {{ banner.image_size.1 }}<small>px</small>
+                </p>
+            {% endfor %}
+        </div>
+        <div class="pb-5">
+            <h3 class="text-secondary">질문</h3>
+            <p>* 캠페인이 생성되면 질문은 수정하실 수 없습니다.</p>
+        </div>
+    </div>
+    <!-- End Body -->
+</div>
+<!-- End Card -->

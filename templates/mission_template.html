@@ -1,0 +1,316 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>{{ title }}</title>
+    <meta name="keywords" content="{{ keywords }}">
+    <meta name="description" content="{{ description }}">
+    <meta name="publisher" content="애니맨">
+    <link rel="stylesheet" href="{% static 'template/css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'template/css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        .main-content{
+            position: relative;
+            width: 100%;
+            height: 700px;
+            background: url({{ title_image_url }}) center center no-repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            color: #fff;
+        }
+        .review-wrapper .review-info .profile .user-img{
+            width: 24px;
+            height: 24px;
+            background: url({% static 'template/img/user_profile.svg' %}) center center no-repeat;
+            margin-right: 8px;
+        }
+    </style>
+    <script src="{% static 'template/js/jquery.js' %}"></script>
+    <script src="{% static 'template/js/hammer.js' %}"></script>
+    <script src="{% static 'template/js/script.js' %}"></script>
+</head>
+<body>
+<div class="wrapper">
+    <header class="header">
+        <div class="inner-content">
+            <h1><a href=""><img src="{% static 'template/img/logo_anyman.svg' %}"></a></h1>
+            <nav><a class="btn-request request">무료 견적 받기</a></nav>
+        </div>
+    </header>
+    <section class="main-content">
+        <div class="layer"></div>
+        <div class="template-text">
+            <h2>{{ title }}</h2>
+            <p class="subtitle">간편한 요청서를 작성하고<br>주변 헬퍼님에게 무료견적 받으세요.</p>
+            <div class="template-review">
+                <ul>
+                    <li class="title">누적후기</li>
+                    <li class="count">{{ review_count }}</li>
+                </ul>
+                <div class="line"></div>
+                <ul>
+                    <li class="title">고객만족도</li>
+                    <li class="count">{{ review_average|default:'0.00' }}</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    <section class="btn-request">
+        <a class="request">무료 견적 받기</a>
+    </section>
+    {% if reviews.count > 0 %}
+    <section class="user-review">
+        <div class="inner-content">
+            <h3>
+                다른 고객님의<br>이용 후기에요.
+            </h3>
+            <div class="review-wrapper">
+                <ul>
+                    {% for review in reviews %}
+                        <li>
+                            <div class="review">
+                                <div class="template-name">{{ review.bid.mission.template.name }}</div>
+                                <div class="star-box">
+                                    <object data="{% static 'template/img/icon_star.svg' %}" type="image/svg+xml" class="star"></object>
+                                    <object data="{% static 'template/img/icon_star.svg' %}" type="image/svg+xml" class="star"></object>
+                                    <object data="{% static 'template/img/icon_star.svg' %}" type="image/svg+xml" class="star"></object>
+                                    <object data="{% static 'template/img/icon_star.svg' %}" type="image/svg+xml" class="star"></object>
+                                    <object data="{% static 'template/img/icon_star.svg' %}" type="image/svg+xml" class="star"></object>
+                                    <span>{{ review.star_avg }}</span>
+                                </div>
+                                <p>{{ review.content }}</p>
+                                <div class="review-info">
+                                    <div class="profile">
+                                        <div class="user-img"></div>
+                                        <span class="user-name">{{ review.created_user.username }}</span>
+                                    </div>
+                                    <span class="date">{{ review.created_datetime }}</span>
+                                </div>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+    <section class="service-guide">
+        <div class="inner-content">
+            <h3>
+                애니맨 서비스는<br>어떻게 진행될까요?
+            </h3>
+            <div class="slide-wrapper">
+                <div class="slides">
+                    <div class="slide">
+                        <img class="slide-img" src="{% static 'template/img/screenshot_01.png' %}">
+                        <div class="slide-text">
+                            <div class="title">견적 요청하기</div>
+                            <span>도움이 필요한 내용을 자세히 작성하고 견적 요청해주세요.</span>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-contents">
+                            <img class="slide-img" src="{% static 'template/img/screenshot_02.png' %}">
+                            <div class="slide-text">
+                                <div class="title">견적 확인하기</div>
+                                <span>헬퍼가 서비스내용 확인 후 입찰하며,<br>그 결과를 카카오알림톡 또는 문자(SMS)로 알려드려요.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slide">
+                        <div class="slide-contents">
+                            <img class="slide-img" src="{% static 'template/img/screenshot_03.png' %}">
+                            <div class="slide-text">
+                                <div class="title">헬퍼 선택하기</div>
+                                <span>입찰한 헬퍼의 금액, 이력 등을<br>확인 후 마음에 드는 헬퍼를 선택 후 도움받으세요.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pagination">
+                    <ul>
+                        <li><a class="active"></a></li>
+                        <li><a></a></li>
+                        <li><a></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="service-point">
+        <div class="inner-content">
+            <div class="title">
+                <h3>
+                    왜 애니맨에서 찾을까요?
+                </h3>
+                <h4>
+                    40만명이 애니맨을 선택한 이유
+                </h4>
+            </div>
+            <div class="point-list">
+                <ul>
+                    <li>
+                        <img src="{% static 'template/img/icon_point_01.svg' %}" alt="">
+                        <p>2분만에 견적서가 카카오알림톡 또는 문자(SMS)로!
+                            <span>
+                                요청 후 평균 견적 시간 2분
+                            </span>
+                        </p>
+                    </li>
+                    <li>
+                        <img src="{% static 'template/img/icon_point_02.svg' %}" alt="">
+                        <p>나를 도와줄 사람을 내가 직접 선택!
+                            <span>
+                                자동, 선착순 배정이 아닌<br>
+                                고객 직접 선택 시스템
+                            </span>
+                        </p>
+                    </li>
+                    <li>
+                        <img src="{% static 'template/img/icon_point_03.svg' %}" alt="">
+                        <p>전국 7만 5천명의 헬퍼!
+                            <span>
+                               신원이 확인된 다양한 영역의<br>전문가에게 실시간 서비스 요청
+                            </span>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    <section class="faq">
+        <div class="inner-content">
+            <h3>
+                다른 고객님들이<br>궁금해하는 질문들이에요.
+            </h3>
+            <div class="wrapper">
+                <div class="faq-list">
+                    <p class="question">
+                        <img src="{% static 'template/img/icon_question_yellow.svg' %}">
+                        견적을 받은 후에는 어떻게 해야 하나요?
+                    </p>
+                    <div class="answer">
+                        카카오알림톡 또는 문자(SMS)로 안내 받은 링크를 클릭 하시면 견적한 헬퍼의 프로필 확인이 가능하며,
+                        견적 금액과 고객님들의 리뷰를 확인하시고 마음에 드는 헬퍼를 선택해주시면 됩니다.
+                    </div>
+                </div>
+                <div class="faq-list">
+                    <p class="question">
+                        <img src="{% static 'template/img/icon_question_yellow.svg' %}">
+                        결제 방식은 어떻게 되나요?
+                    </p>
+                    <div class="answer">
+                        카카오알림톡 또는 문자(SMS)로 안내 받은 링크를 클릭하시면 헬퍼 선택이 가능하며, 헬퍼 선택 후 카드결제가 가능합니다.
+                    </div>
+                </div>
+                <div class="faq-list">
+                    <p class="question">
+                        <img src="{% static 'template/img/icon_question_yellow.svg' %}">
+                        결제 후에는 어떻게 해야 하나요?
+                    </p>
+                    <div class="answer">
+                        헬퍼에게 1877-5276 안심번호로 서비스 관련 연락을 받게됩니다. 전화를 통해 실시간 수행 과정을 공유하며 서비스를 진행하세요.
+                    </div>
+                </div>
+                <div class="faq-list">
+                    <p class="question">
+                        <img src="{% static 'template/img/icon_question_yellow.svg' %}">
+                        헬퍼는 어떻게 등록되나요?
+                    </p>
+                    <div class="answer">
+                        헬퍼는 휴대폰 번호 인증, 신분증 인증을 통한 본사 신원 인증 후에만 등록이 가능합니다.
+                    </div>
+                </div>
+                <div class="faq-list">
+                    <p class="question">
+                        <img src="{% static 'template/img/icon_question_yellow.svg' %}">
+                        진행중 불편사항이 생기면 어떻게 해야 하나요?
+                    </p>
+                    <div class="answer">
+                        카카오톡 채널 (@애니맨) 실시간 상담을 통해 도움 받아보세요. 실시간 상담은 평일 오전 10시부터 오후 6시까지 운영됩니다.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+    <section class="app-download">
+        <div class="inner-content">
+            <h3>앱으로 요청하면<br>다양한 혜택 및 맞춤 서비스를 요청할 수 있어요.</h3>
+            <div class="download-wrapper">
+                <a href=""><img src="{% static 'template/img/btn_playstore.svg' %}" alt="google play"></a>
+                <a href=""><img src="{% static 'template/img/btn_appstore.svg' %}" alt="app store"></a>
+            </div>
+        </div>
+    </section>
+    <footer class="footer-wrapper">
+        <div class="inner-content">
+            <div class="company-info">
+                <p class="cs">
+                    @애니맨24 (평일 오전 10시 ~ 오후 6시)
+                </p>
+                <p>
+                    (주)에이에스엔<br>
+                    주소 : 서울 구로구 디지털로 32길 30, 702호 |
+                    사업자등록번호 : 261-81-11760 | 통신판매업 : 2016 - 서울구로 - 0074 | 메일 : help@anyman.co.kr
+
+                </p>
+                <p>
+                    애니맨은 통신판매 중개자이며 통신판매의 당사자가 아닙니다. 따라서 애니맨은 서비스, 거래정보 및 거래에 책임을 지지 않습니다.
+                </p>
+                <p class="copyright">
+                    Copyright (C) A.S.N. Co., Ltd. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </footer>
+</div>
+<div class="template-wrapper" id="template-wrapper" style="display:none">
+    <iframe src="abount:blank" id="template-iframe"></iframe>
+</div>
+
+<script>
+
+
+    /* IE 의 경우 EDGE 로 redir  */
+    if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) {
+        window.location = 'microsoft-edge:' + window.location;
+        setTimeout(function () {
+            window.location = 'https://go.microsoft.com/fwlink/?linkid=2135547';
+        }, 1);
+    }
+
+
+
+    $(document).ready(function () {
+
+        /* 견적받기 iframe 초기화 및 버튼 이벤트 할당  */
+        var template = new Template('template-wrapper', '{{ template_url }}');
+        $('.request').on('click', function () {
+            template.open();
+        });
+
+
+        /* 슬라이드 기능 활성화 */
+        var slides = new Slides('.slide-wrapper');
+    });
+</script>
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DTG50Y1YXB"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-DTG50Y1YXB');
+</script>
+
+</body>
+</html>

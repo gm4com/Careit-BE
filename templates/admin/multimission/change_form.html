@@ -1,0 +1,69 @@
+{% extends "admin/change_form_split.html" %}
+{% load admin_modify admin_urls internal common missions_admin %}
+
+
+{% block split-left %}4{% endblock %}
+{% block split-right %}8{% endblock %}
+
+
+{% block object-tools-items %}
+	{% if original %}
+		<li>
+			<form action="{% url 'admin:missions_multimission_upload_excel' original.id %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+				<div class="input-group" id="excel-file-upload">
+					<div class="input-group-prepend">
+						<a href="{% url 'admin:missions_multimission_download_excel' %}" class="btn btn-outline-primary">
+							<i class="fa fa-lg fa-file-excel-o"></i>
+						</a>
+					</div>
+					<div class="custom-file border-secondary">
+						<input type="file" name="excel" class="custom-file-input" id="excel-file-field">
+						<label class="custom-file-label btn border-primary" for="excel-file-field" aria-describedby="excel-file-upload">요청지역 엑셀 파일</label>
+					</div>
+					<div class="input-group-append">
+						<button class="btn btn-outline-primary" id="excel-file-upload">업로드</button>
+					</div>
+				</div>
+			</form>
+		</li>
+		<li>
+			{% multi_mission_state_menu original '' '미션 상태' %}
+		</li>
+{#		<li><a href="{% url 'admin:accounts_user_change' original.user_id %}" class="btn btn-info">회원 정보</a></li>#}
+	{% endif %}
+	{% change_form_object_tools %}
+{% endblock %}
+
+
+{% block extrastyle %}
+	{{ block.super }}
+	<style>
+		#excel-file-upload label:after {
+			content: none;
+		}
+		#id_summary {
+			height: 60px;
+		}
+		.dynamic-children:not(.has_original) td.field-get_state_functions .dropdown {
+			display: none;
+		}
+
+		.inline-related fieldset .field-detail_1 input.vTextField,
+		.inline-related fieldset .field-detail_2 input.vTextField {
+			max-width: 200px;
+		}
+		.inline-related fieldset .field-customer_mobile input.vTextField {
+			width: 100px;
+		}
+	</style>
+{% endblock %}
+
+
+{% block after_script %}
+<script type="application/javascript">
+    $('input#excel-file-field').change(function(e){
+        var fileName = e.target.files[0].name;
+        $('.custom-file-label').html(fileName);
+    });
+</script>
+{% endblock %}

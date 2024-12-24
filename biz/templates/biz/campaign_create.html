@@ -1,0 +1,595 @@
+{% extends 'biz/base.html' %}
+{% load static %}
+
+
+{% block title %}캠페인 생성{% endblock %}
+
+{% block add_css %}
+    <link rel="stylesheet" href="{% static 'biz/vendor/flatpickr/dist/flatpickr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'biz/vendor/@yaireo/tagify/dist/tagify.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="row align-items-end">
+            <div class="col-sm mb-2 mb-sm-0">
+                <h1 class="page-header-title">캠페인 생성</h1>
+            </div>
+        </div>
+    </div>
+    <!-- End Page Header -->
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="POST" enctype="multipart/form-data" onsubmit="return do_submit()" id="upload_form">
+                {% csrf_token %}
+                <!-- Card -->
+                <div class="card mb-3 mb-lg-5">
+                    <!-- Header -->
+                    <div class="card-header">
+                        <h4 class="card-header-title">캠페인 정보 입력</h4>
+                    </div>
+                    <!-- End Header -->
+
+                    <!-- Body -->
+                    <div class="card-body" id="campaign_form_body">
+
+                        {% include 'biz/include/campaign_form.html' %}
+
+                        <!-- Form Group -->
+                        <div class="row">
+                            <label for="zipCodeLabel" class="col-sm-3 col-form-label input-label">
+                                질문 <small class="text-danger">*</small>
+                            </label>
+                            <div class="col-sm-9">
+                                <!-- Step -->
+                                <ul class="step m-0" v-show="has_questions" style="display: none;">
+                                    <li class="step-item" v-for="(question, index) in questions" v-bind:key="index">
+                                        <div class="step-content-wrapper">
+                                            <span class="step-icon step-icon-soft-primary">[[ index + 1 ]] </span>
+                                            <div class="step-content">
+                                                <h4>
+                                                    <span>
+                                                        [[ question.name ]] <small v-if="question.is_required"
+                                                                                   class="badge badge-soft-danger">필수</small>
+                                                    </span>
+                                                    <span class="float-right">
+                                                            <button type="button" v-if="index !== 0"
+                                                                    @click="change_question(index, -1)"
+                                                                    class="btn btn-soft-primary btn-icon btn-xs">
+                                                                <i class="tio-arrow-upward"></i>
+                                                            </button>
+                                                            <button type="button" @click="change_question(index, 1)"
+                                                                    class="btn btn-soft-primary btn-icon btn-xs">
+                                                                <i class="tio-arrow-downward"></i>
+                                                            </button>
+                                                            <button type="button" @click="remove_question(index)"
+                                                                    class="btn btn-soft-danger btn-icon btn-xs">
+                                                                X
+                                                            </button>
+                                                    </span>
+                                                </h4>
+                                                <p class="step-text">[[ question.title ]] <br>
+                                                    <small v-if="question.options.length > 0 ">
+                                                        옵션 : [[ question.options ]] <small
+                                                            v-if="question.has_etc_input">+ 기타</small>
+                                                    </small>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                                <!-- End Step -->
+                                <div class="mb-3">
+                                    <a class=" form-link btn btn-sm btn-no-focus btn-ghost-primary" data-toggle="modal"
+                                       data-target="#campaignAddModal">
+                                        <i class="tio-add"></i> 질문 추가
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- End Form Group -->
+                    </div>
+                    <!-- Body -->
+                </div>
+                <!-- End Card -->
+
+                <div class="d-flex justify-content-end d-print-none">
+                    <button class="btn btn-primary">
+                        <i class="tio-checkmark-circle-outlined mr-1"></i> 캠페인 생성
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-4">
+            {% include 'biz/include/campaign_notification.html' %}
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="campaignAddModal" tabindex="-1" role="dialog" aria-labelledby="campaignAddModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <!-- Header -->
+                <div class="modal-header">
+                        <h4 class="modal-title" id="campaignAddModalLabel">캠페인 질문</h4>
+                    <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
+                            aria-label="Close">
+                        <i class="tio-clear tio-lg" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <!-- End Header -->
+                <div class="row">
+                    <div class="col-sm-8">
+                        <!-- Body -->
+                        <div class="modal-body">
+                            <!-- Form Group -->
+                            <div class="form-group">
+                                <label class="" for="question_type">
+                                    질문 유형 <small class="text-danger">*</small>
+                                </label>
+                                <select id="question_type" class="form-control" v-model="question_type">
+                                    <option value=null>-- 유형 선택</option>
+                                    {% for option in question_type_list %}
+                                        <option value="{{ option.0 }}">{{ option.1 }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <!-- End Form Group -->
+
+                            <!-- Form Group -->
+                            <div class="form-group">
+                                <label class="" for="name">
+                                    항목 이름 <small class="text-danger">*</small>
+                                    <i class="tio-help-outlined text-body ml-1" data-toggle="tooltip"
+                                       data-placement="right" title=""
+                                       data-original-title="헬퍼에게 내용을 정리해서 보여줄 때 표시되는 해당 항목의 이름입니다."></i>
+                                </label>
+                                <input type="text" id="name" v-model="name" class="form-control">
+                            </div>
+                            <!-- End Form Group -->
+
+                            <!-- Form Group -->
+                            <div class="form-group">
+                                <label class="" for="title">질문 제목 <small class="text-danger">*</small></label>
+                                <input type="text" id="title" v-model="title" class="form-control">
+                            </div>
+                            <!-- End Form Group -->
+
+                            <!-- Form Group -->
+                            <div class="form-group">
+                                <label class="" for="description">질문 설명 <small class="text-danger">*</small></label>
+                                <textarea id="description" v-model="description" class="form-control" rows="4"></textarea>
+                            </div>
+                            <!-- End Form Group -->
+
+                            <!-- Form Group -->
+                            <div class="form-group">
+                                <div class="form-check form-check-inline">
+                                    <div class="custom-control custom-checkbox">
+                                        <label class="custom-control-label" for="is_required">필수 입력 여부</label>
+                                        <input type="checkbox" id="is_required" class="custom-control-input"
+                                               v-model="is_required">
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Form Group -->
+
+                            <!-- Form Group -->
+                            <div class="form-group" v-show="check_type">
+                                <label class="" for="exampleFormControlInput1">
+                                    옵션 <small class="text-danger">*</small>
+                                </label>
+                                <!-- Form Check -->
+                                <div class="form-check form-check-inline float-right">
+                                    <div class="custom-control custom-checkbox">
+                                        <label class="custom-control-label" for="has_etc_input">
+                                            기타 옵션 추가(사용자 입력)
+                                        </label>
+                                        <input type="checkbox" id="has_etc_input"
+                                               class="custom-control-input indeterminate-checkbox"
+                                               v-model="has_etc_input">
+                                    </div>
+                                </div>
+                                <!-- End Form Check -->
+
+                                <!-- Form Group -->
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text" id="basic-addon3">선택 옵션</span>
+                                    </div>
+                                    <input type="text" id="option" class="form-control" @keyup.enter="add_option()"
+                                           v-model="option">
+                                    <div class="input-group-append">
+                                        <a class="btn btn-icon btn-success" @click="add_option()">
+                                            <i class="tio-add"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- End Form Group -->
+                            </div>
+                            <!-- End Form Group -->
+
+                            <!-- Form Group -->
+                            <div class="form-group">
+                                <div class="pr-3" style="display:inline" v-for="(item, index) in options">
+                                    <div title="css" contenteditable="false" spellcheck="false" tabindex="-1"
+                                         class="tagify__tag tagify--noAnim">
+                                         <span @click="remove_option(index)" title="" class="tagify__tag__removeBtn"
+                                               role="button" aria-label="remove tag"></span>
+                                        <div class="tagify__tag-text">[[ item ]]</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Form Group -->
+                        </div>
+                        <!-- End Body -->
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="col-sm-4">
+                        <div class="pr-md-6 pt-md-5 p-3">
+                            <div class="card d-print-none">
+                                <!-- Progress -->
+                                <div class="card-progress-wrap">
+                                    <div class="progress card-progress">
+                                        <div class="progress-bar" role="progressbar"
+                                             style="width: 25%; background: #ffda22;"
+                                             aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                                <!-- End Progress -->
+
+                                <!-- Header -->
+                                <div class="card-header">
+                                    <h5 class="card-header-title">미리보기</h5>
+                                </div>
+                                <!-- End Header -->
+                                <hr class="my-0">
+                                <!-- Body -->
+                                <div class="card-body">
+                                    <div class="pb-2">
+                                        <h5>
+                                            <span v-text="title"></span>
+                                            <small v-show="!is_required && title">(선택)</small><br>
+                                            <small v-text="description"></small>
+                                        </h5>
+                                    </div>
+                                    <div class="pb-5">
+                                        <!-- Checkbox or radio -->
+                                        <div class="custom-control" v-bind:class="add_class"
+                                             v-for="(option, index) in options" v-bind:key="index">
+                                            <div class="pb-2">
+                                                <label class="custom-control-label" v-bind:for="option"
+                                                       v-text="option"></label>
+                                                <input v-bind:type="question_type" v-bind:id="option" name="custom"
+                                                       class="custom-control-input">
+                                            </div>
+                                        </div>
+                                        <div class="custom-control" v-show="has_etc_input" v-bind:class="add_class">
+                                            <div class="pb-2">
+                                                <label class="custom-control-label"
+                                                       for="type">기타</label>
+                                                <input v-bind:type="question_type" id="type" name="custom"
+                                                       class="custom-control-input">
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control form-control-sm"
+                                                           placeholder="직접 입력">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End Checkbox or radio -->
+
+                                        <!-- type input -->
+                                        <div v-if="question_type === 'number' || question_type === 'text' ">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control form-control-sm"
+                                                       placeholder="직접 입력">
+                                            </div>
+                                        </div>
+                                        <!-- End type input -->
+
+                                        <!-- type textarea -->
+                                        <div v-if="question_type === 'textarea'">
+                                            <div class="form-group">
+                                                <textarea rows="4" class="form-control" placeholder="직접 입력"></textarea>
+                                            </div>
+                                        </div>
+                                        <!-- End type textarea -->
+
+                                        <!-- type area -->
+                                        <div v-if="question_type === 'area'">
+                                            <div class="pb-2">
+                                                <select class="custom-select">
+                                                    <option selected="">시/도</option>
+                                                    <option value="1">강원도</option>
+                                                    <option value="2">경기도</option>
+                                                    <option value="3">경상남도</option>
+                                                    <option value="4">경상북도</option>
+                                                    <option value="5">.....</option>
+                                                    <option value="6">.....</option>
+                                                    <option value="7">.....</option>
+                                                    <option value="15">제주특별자치도</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <select class="custom-select">
+                                                    <option selected="">구/군</option>
+                                                    <option>.....</option>
+                                                    <option>.....</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- End type area -->
+
+
+                                        <!-- type address -->
+                                        <div v-if="question_type === 'address'">
+                                            <div class="form-group">
+                                                <button type="button" class="btn btn-white btn-block">+ 주소검색</button>
+                                            </div>
+                                        </div>
+                                        <!-- End type address -->
+
+                                        <!-- type date ot time -->
+                                        <div v-if="question_type === 'date' || question_type === 'datetime'">
+                                            <div class="pb-2">
+                                                <div class="alert alert-soft-dark card-alert" role="alert"
+                                                     style="height: 50px;">
+                                                    <small class="float-left"><b>날짜</b></small>
+                                                    <small class="float-right">날짜를 선택해주세요</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div v-if="question_type === 'time' || question_type === 'datetime'">
+                                            <div class="pb-2">
+                                                <div class="alert alert-soft-dark card-alert" role="alert"
+                                                     style="height: 50px;">
+                                                    <small class="float-left"><b>시간</b></small>
+                                                    <small class="float-right">시간을 선택해주세요</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End type date ot time -->
+
+                                        <!-- type files -->
+                                        <div v-if="question_type === 'files'">
+                                            <div class="form-group">
+                                                <button type="button" class="btn btn-white">
+                                                    <img src="https://www.anyman.co.kr/mission/img/icon_file.847b019e.svg">
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <!-- End type files -->
+
+                                    </div>
+                                </div>
+                                <!-- End Body -->
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- End Preview -->
+                </div>
+                <!-- Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-white" data-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-primary" onclick="campaign_form_body_vue.add_question()">
+                        질문 추가
+                    </button>
+                </div>
+                <!-- End Footer -->
+            </div>
+        </div>
+    </div>
+    <!-- End Modal -->
+
+{% endblock %}
+
+{% block add_js %}
+    <script src="{% static 'biz/vendor/flatpickr/dist/flatpickr.min.js' %}"></script>
+    <script src="{% static 'biz/vendor/@yaireo/tagify/dist/tagify.min.js' %}"></script>
+
+    <script>
+        function readURL(input, pk) {
+            let obj = document.getElementById('preview_' + pk)
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    obj.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                obj.src = "{% static 'biz/img/preview/900x400_img.jpg'%}";
+            }
+        }
+
+        function do_submit() {
+            let location = [];
+            let has_image = false
+            $('.images').each(function (item, data) {
+                let location_number = data.id.replace(/[^0-9]/g, '');
+                location.push({
+                    'location_number': location_number,
+                    'file': data.files.length
+                })
+                if (data.files[0]) {
+                    has_image = true
+                }
+            })
+            if (!has_image && !campaign_form_body_vue.request_image) {
+                alert('이미지는 최소 1개는 등록하셔야합니다.')
+                return false;
+            }
+            if (campaign_form_body_vue.questions.length === 0) {
+                alert('질문은 필수 항목입니다.')
+                return false;
+            }
+            $('#id_campaign_questions').text(JSON.stringify(campaign_form_body_vue.questions))
+            $('#id_location').val(JSON.stringify(location))
+            return true
+        }
+
+        function is_options_included(question_type) {
+            // options 항목이 필요한 유형 확인
+            let options = ['radio', 'checkbox'];
+            return options.indexOf(question_type) !== -1
+        }
+
+        function is_validate_question() {
+            let is_cleaned = true
+            if (!campaign_modal_vue.question_type) {
+                alert('캠페인 유형은 필수 항목입니다.');
+                is_cleaned = false;
+            } else {
+                if (is_options_included(campaign_modal_vue.question_type) && campaign_modal_vue.options.length === 0) {
+                    alert('최소 1개 이상의 선택 옵션을 등록해주세요.');
+                    is_cleaned = false;
+                } else {
+                    if (!campaign_modal_vue.name) {
+                        alert('항목 이름은 필수 입력사항 입니다.');
+                        is_cleaned = false;
+                    } else if (!campaign_modal_vue.title) {
+                        alert('질문 제목은 필수 입력사항 입니다.');
+                        is_cleaned = false;
+                    } else if (!campaign_modal_vue.description) {
+                        alert('질문 설명은 필수 입력사항 입니다.');
+                        is_cleaned = false
+                    }
+                }
+            }
+            return is_cleaned
+        }
+
+        function resetModalInput() {
+            campaign_modal_vue.question_type = null
+            campaign_modal_vue.option = ''
+            campaign_modal_vue.options = []
+            campaign_modal_vue.name = ''
+            campaign_modal_vue.title = ''
+            campaign_modal_vue.description = ''
+            campaign_modal_vue.is_required = false
+            campaign_modal_vue.has_etc_input = false
+        }
+
+        // End 함수 //
+
+        let campaign_form_body_vue = new Vue({
+            el: '#campaign_form_body',
+            delimiters: ['[[', ']]'],
+            data: {
+                questions: [],
+                request_image: false,
+                uploadFiles: [],
+            },
+            methods: {
+                remove_question: function (index) {
+                    if (confirm('삭제할까요?')) {
+                        this.questions.splice(index, 1);
+                    }
+                },
+                change_question: function (index, up_down) {
+                    const item = this.questions.splice(index, 1)
+                    this.questions.splice(index + up_down, 0, item[0])
+                },
+                add_question: function () {
+                    if (!is_validate_question()) {
+                        return false;
+                    }
+                    let data = {
+                        question_type: campaign_modal_vue.question_type,
+                        options: campaign_modal_vue.options,
+                        name: campaign_modal_vue.name,
+                        title: campaign_modal_vue.title,
+                        description: campaign_modal_vue.description,
+                        is_required: campaign_modal_vue.is_required,
+                        has_etc_input: campaign_modal_vue.has_etc_input,
+                    }
+                    this.questions.push(data)
+                    $('#campaignAddModal').modal('hide')
+                    resetModalInput()
+                },
+                get_files: function (event) {
+                    let uploadFiles = this.uploadFiles
+                    let fd = new FormData();
+                    let $id_image = document.querySelector('#id_image');
+                    let $tmp_file = document.querySelector('#tmp_file');
+                    uploadFiles.push($tmp_file);
+                }
+            },
+            computed: {
+                has_questions: function () {
+                    return this.questions.length !== 0
+                }
+            }
+        })
+
+        let campaign_modal_vue = new Vue({
+            el: '#campaignAddModal',
+            delimiters: ['[[', ']]'],
+            data: {
+                question_type: null,
+                option: '',
+                options: [],
+                name: '',
+                title: '',
+                description: '',
+                is_required: false,
+                has_etc_input: false,
+            },
+            methods: {
+                remove_option: function (index) {
+                    this.options.splice(index, 1);
+                },
+                add_option: function () {
+                    if (this.options.indexOf(this.option) !== -1) {
+                        return alert('존재하는 키워드입니다.')
+                    }
+                    if (!this.option) {
+                        return alert('텍스트를 입력해주세요.')
+                    }
+                    this.options.push(this.option)
+                    this.option = ''
+                }
+            },
+            computed: {
+                check_type: function () {
+                    let is_include = is_options_included(this.question_type)
+                    if (!is_include) {
+                        //  해당 옵션이 아닌경우 옵션에 적힌 값 초기화
+                        this.options = []
+                        this.has_etc_input = false
+                    }
+                    return is_include;
+                },
+                add_class: function () {
+                    return {
+                        'custom-radio': this.question_type === 'radio',
+                        'custom-checkbox': this.question_type === 'checkbox'
+                    }
+                }
+            }
+        })
+
+        $('#campaignAddModal').on('hidden.bs.modal', function () {
+            // something
+            resetModalInput()
+        })
+
+        $(document).on('ready', function () {
+            // INITIALIZATION OF FLATPICKR
+            // =======================================================
+            $('.js-flatpickr').each(function () {
+                $.HSCore.components.HSFlatpickr.init($(this));
+            });
+            // INITIALIZATION OF TAGIFY
+            // =======================================================
+            $('.js-tagify').each(function () {
+                var tagify = $.HSCore.components.HSTagify.init($(this));
+            });
+        });
+    </script>
+{% endblock %}

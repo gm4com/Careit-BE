@@ -1,0 +1,10 @@
+{% extends "admin/change_form_split.html" %}
+{% load admin_modify admin_urls internal common %}
+
+
+{% block object-tools-items %}
+	{% if original and not original.result.request_count %}
+		<li><a href="{% url 'admin:notification_notification_send' original.id %}" class="btn btn-primary">알림 발송요청 ({{ original.tokens|length }})</a></li>
+	{% endif %}
+	{% change_form_object_tools %}
+{% endblock %}

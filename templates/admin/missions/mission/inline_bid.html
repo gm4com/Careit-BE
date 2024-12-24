@@ -1,0 +1,79 @@
+{% load i18n admin_urls static admin_modify common %}
+
+
+{% if inline_admin_formset.has_add_permission %}
+	{% include 'admin/edit_inline/tabular.html' %}
+{% else %}
+	<fieldset class="module {{ inline_admin_formset.classes }}">
+		<h2>타임라인</h2>
+		<div class="row">
+			{% for line in original.timeline %}
+			<div class="col-3">{{ line.0 }}</div>
+			<div class="col-3">{{ line.1 }}</div>
+			<div class="col-6">{{ line.2 }}</div>
+			{% endfor %}
+		</div>
+	</fieldset>
+
+	<fieldset class="module {{ inline_admin_formset.classes }}">
+		{{ inline_admin_formset.formset.management_form }}
+		{{ inline_admin_formset.formset.non_form_errors }}
+		<h2>{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}</h2>
+		<div class="container-fluid">
+			<div class="row mt-3">
+				{% for form in inline_admin_formset %}
+					<div class="card {{ form.original.state_class }} mb-3 mr-3" style="max-width: 20rem;">
+						<div class="card-header">{{ form.original.get_state_display }}</div>
+						<div class="card-body">
+							<h4 class="card-title">{{ form.original.helper.user.username }} <small class="text-info">Lv. {{ form.original.helper.level }}</small></h4>
+							<p><small>{{ form.original.applied_datetime }} 입찰</small></p>
+							{% if not form.original.mission.is_amount_fixed %}<h5 class="text-center">₩{{ form.original.amount|add_comma }}</h5>{% endif %}
+							<div class="btn-group btn-block mt-3">
+								<a class="btn btn-light btn-sm" href="{% url 'admin:missions_bid_change' form.original.id %}">입찰정보</a>
+								<a class="btn btn-light btn-sm" href="{% url 'admin:accounts_user_change' form.original.helper.user_id %}">회원정보</a>
+								<a class="btn btn-light btn-sm" href="{% url 'admin:accounts_helper_change' form.original.helper_id %}">헬퍼정보</a>
+							</div>
+							<div class="btn-group btn-block mt-3">
+								{% if form.original.state == 'done' or form.original.state == 'in_action' %}
+									<button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirm-modal"
+									        data-title="관리자 직권 취소" data-content="이 미션입찰을 직권 취소하시겠습니까?"
+									        data-btn-text="직권 취소" data-btn-class="danger"
+									        data-link="{% url 'admin:missions_bid_cancel' form.original.id %}">
+										직권 취소
+									</button>
+								{% endif %}
+								{% if form.original.state == 'in_action' %}
+									<button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#confirm-modal"
+									        data-title="강제 완료처리" data-content="이 미션을 강제로 완료처리 하시겠습니까?"
+									        data-btn-text="강제 완료처리" data-btn-class="danger"
+									        data-link="{% url 'admin:missions_bid_force_finish' form.original.id %}">
+										강제 완료처리
+									</button>
+								{% endif %}
+							</div>
+
+							{# 폼셋 오류방지를 위해 hidden으로 추가 #}
+							<div class="hidden inline-related{% if form.original or form.show_url %} has_original{% endif %}{% if forloop.last and inline_admin_formset.has_add_permission %} empty-form last-related{% endif %}"
+							     id="{{ inline_admin_formset.formset.prefix }}-
+									     {% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+								{% if form.form.non_field_errors %}{{ form.form.non_field_errors }}{% endif %}
+								{% for fieldset in form %}
+									{% include "admin/includes/fieldset.html" %}
+								{% endfor %}
+								{% if form.needs_explicit_pk_field %}{{ form.pk_field.field }}{% endif %}
+								{% if form.fk_field %}{{ form.fk_field.field }}{% endif %}
+							</div>
+
+						</div>
+					</div>
+				{% empty %}
+					<div class="col-12">
+						<p class="text-center">입찰내역 없음</p>
+					</div>
+				{% endfor %}
+			</div>
+		</div>
+	</fieldset>
+
+{% endif %}
+

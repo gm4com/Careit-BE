@@ -1,0 +1,14 @@
+﻿<html>
+<head>
+   	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>NICE평가정보 - CheckPlus 안심본인인증</title>
+</head>
+<body>
+    <form name="form_chk" method="post" action="https://nice.checkplus.co.kr/CheckPlusSafeModel/checkplus.cb">
+        <input type="hidden" name="m" value="checkplusSerivce">
+        <input type="hidden" name="EncodeData" value="{{ enc_data }}">
+        <button type="submit">인증</button>
+    </form>
+</body>
+</html>

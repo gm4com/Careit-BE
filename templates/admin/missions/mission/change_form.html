@@ -1,0 +1,34 @@
+{% extends "admin/change_form_split.html" %}
+{% load admin_modify admin_urls internal common %}
+
+
+{% block split-left %}{% if original %}4{% else %}7{% endif %}{% endblock %}
+{% block split-right %}{% if original %}8{% else %}5{% endif %}{% endblock %}
+
+
+{% block object-tools-items %}
+	{% if original %}
+		<li>
+			<div class="dropdown">
+				<div class="btn-group">
+					<button class="btn btn-outline-dark">미션 상태</button>
+					{% if original.can_cancel %}
+					<button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+				        aria-haspopup="true" aria-expanded="false">
+						{{ original.get_state_display }}
+					</button>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+						<a href="{% url 'admin:missions_mission_cancel' original.id %}" class="dropdown-item">미션 취소</a>
+					</div>
+					{% else %}
+					<button class="btn btn-dark" type="button" id="dropdownMenuButton">
+						{{ original.get_state_display }}
+					</button>
+					{% endif %}
+				</div>
+			</div>
+		</li>
+		<li><a href="{% url 'admin:accounts_user_change' original.user_id %}" class="btn btn-info">회원 정보</a></li>
+	{% endif %}
+	{% change_form_object_tools %}
+{% endblock %}

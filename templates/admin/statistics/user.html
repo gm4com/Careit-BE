@@ -1,0 +1,52 @@
+{% extends 'admin/statistics/base.html' %}
+{% load dashboard cache %}
+
+
+{% block content-stats %}
+
+	{% cache 4000 user_stat request.GET.preset request.GET.start request.GET.end %}
+	<div class="row">
+		<div class="col-12">
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">활동</h3>
+			{% chart 'UserActionDashboard' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">회원 변동</h3>
+			{% chart 'UserDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">미션 완료 회수별 고객수</h3>
+			{% chart 'UserMissionDoneDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">미션 완료 회수별 헬퍼수</h3>
+			{% chart 'HelperMissionDoneDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">가입 후 첫 미션요청까지 걸리는 기간</h3>
+			{% chart 'FirstRequestDaysChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">앱 버젼</h3>
+			{% chart 'AppChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">접속 단말기</h3>
+			{% chart 'DeviceChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+		</div>
+	</div>
+	{% endcache %}
+
+{% endblock %}

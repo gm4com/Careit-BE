@@ -1,0 +1,77 @@
+{% load static %}
+
+
+<div class="navbar-vertical-content">
+    <ul class="navbar-nav navbar-nav-lg nav-tabs">
+        <li class="nav-item ">
+            <a class="js-nav-tooltip-link nav-link {% if '/dashboard/' in request.path %}active{% endif %}"
+               href="{% url 'biz:dashboard' partnership.code %}" title="campaign"
+               data-placement="left">
+                <i class="tio-dashboard nav-icon"></i>
+                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">대시보드 </span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <small class="nav-subtitle" title="Pages">비즈</small>
+            <small class="tio-more-horizontal nav-subtitle-replacer"></small>
+        </li>
+
+        <li class="nav-item ">
+            <a class="js-nav-tooltip-link nav-link {% if '/campaigns/' in request.path %}active{% endif %}"
+               href="{% url 'biz:campaign-list' partnership.code %}" title="campaign"
+               data-placement="left">
+                <i class="tio-pages-outlined nav-icon"></i>
+                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">캠페인 </span>
+            </a>
+        </li>
+        <li class="nav-item ">
+            <a class="js-nav-tooltip-link nav-link {% if '/missions/' in request.path %}active{% endif %}"
+               href="{% url 'biz:mission-list' partnership.code %}" title="missions"
+               data-placement="left">
+                <i class="tio-file nav-icon"></i>
+                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">기업미션 </span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <small class="nav-subtitle" title="Layouts">API</small>
+            <small class="tio-more-horizontal nav-subtitle-replacer"></small>
+        </li>
+
+        <li class="nav-item ">
+            <a class="js-nav-tooltip-link nav-link {% if '/apis/' in request.path %}active{% endif %}"
+               href="{% url 'biz:api-list' partnership.code %}" title="apis"
+               data-placement="left">
+                <i class="tio-layers-outlined nav-icon"></i>
+                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">미션 API </span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <small class="nav-subtitle" title="Layouts">프로필</small>
+            <small class="tio-more-horizontal nav-subtitle-replacer"></small>
+        </li>
+
+        <li class="nav-item ">
+            <a class="js-nav-tooltip-link nav-link {% if '/profile/' in request.path %}active{% endif %}"
+               href="{% url 'biz:profile' partnership.code %}" title="pofile"
+               data-placement="left">
+                <i class="tio-dashboard-vs-outlined nav-icon"></i>
+                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">기업정보 </span>
+            </a>
+        </li>
+        <li class="nav-item ">
+            <a class="js-nav-tooltip-link nav-link {% if '/payment/' in request.path %}active{% endif %}"
+               href="{% url 'biz:payment' partnership.code %}" title="payment"
+               data-placement="left">
+                <i class="tio-money nav-icon"></i>
+                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">결제정보 </span>
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <div class="nav-divider"></div>
+        </li>
+    </ul>
+</div>

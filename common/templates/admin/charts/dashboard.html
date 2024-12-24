@@ -1,0 +1,31 @@
+{% load common %}
+
+<div class="row">
+
+	{% for item in data %}
+		<div class="{{ item.layout_class|default:item_layout_class }}">
+			{% if item.value %}
+				<p class="text-center mb-1">&nbsp;{{ item.percent }}&nbsp;</p>
+				<h3 class="text-center number">{{ item.value }}</h3>
+				<p class="text-center">{{ item.title }}</p>
+			{% else %}
+				<div class="row">
+					{% for i in item %}
+						<div class="col-12 {{ i.layout_class }}">
+							<p class="text-center text-secondary mb-1">&nbsp;{{ i.percent }}&nbsp;</p>
+							<h3 class="text-center number">{{ i.value }}</h3>
+							<p class="text-center">{{ i.title }}</p>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+		</div>
+	{% endfor %}
+
+</div>
+
+<style>
+	.number {
+		font-weight: 200;
+	}
+</style>

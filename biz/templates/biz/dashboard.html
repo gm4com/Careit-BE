@@ -1,0 +1,101 @@
+{% extends 'biz/base.html' %}
+{% load static %}
+{% load biz_front %}
+
+
+{% block title %}애니비즈 기업정보{% endblock %}
+
+{% block content %}
+
+    <div class="row justify-content-lg-center">
+
+        <div class="col-lg-12">
+            <div class="text-center mb-5">
+                <h1 class="page-header-title">
+                    {{ partnership.name }}
+                    {% if partnership.state == 'activated' %}
+                        <i class="tio-verified tio-lg text-success" data-toggle="tooltip"
+                           data-placement="top" title="" data-original-title="{{ partnership.state|get_request_accept_status_text }}"></i>
+                    {% endif %}
+                </h1>
+
+            </div>
+
+            {% if  partnership.state != 'activated' %}
+                <div class="alert alert-soft-danger text-center" role="alert">
+                    <h3 class="text-danger">현재 애니비즈 [ {{ partnership.state|get_request_accept_status_text }} ] 상태 입니다!<br>
+                        {% if partnership.state == 'requested' %}
+                            <small>심사는 영업일 기준 최대 7일 소요될 수 있습니다.</small>
+                        {% endif %}
+                    </h3>
+                </div>
+            {% endif %}
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    <div class="card mb-3 mb-lg-5" id="managers">
+                        <div class="card-header">
+                            <h2 class="card-title h4">사용 서비스</h2>
+                        </div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>서비스</th>
+                                        <th>상태</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for service, info in partnership.service_info.items %}
+                                        <tr>
+                                            <td>{{ info.title }}</td>
+                                            <td>
+                                                {% if info.state is None %}
+                                                    미사용
+                                                {% else %}
+                                                    <a class="btn btn-default btn-sm" href="/biz/{{ partnership.code }}/{{ service }}/">{{ info.count }}개 사용중</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card mb-3 mb-lg-5" id="managers">
+                        <div class="card-header">
+                            <h2 class="card-title h4">사용자 역할</h2>
+                        </div>
+
+                        <div class="card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>회원코드</th>
+                                        <th>이름</th>
+                                        <th>역할</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for r in partnership.user_relations.all %}
+                                        <tr>
+                                            <td>{{ r.user.code }}</td>
+                                            <td>{{ r.user.username }}</td>
+                                            <td>{{ r.get_role_display }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

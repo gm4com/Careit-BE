@@ -1,0 +1,93 @@
+{% load static internal %}
+
+<!-- Form Group -->
+<div class="row form-group">
+    <div class="col-sm-3">
+        <label for="{{ form.campaign_type.id_for_label }}" class="col-form-label input-label">
+            캠페인 종류 <small class="text-danger">*</small>
+        </label>
+    </div>
+    {% if form.instance.id %}
+        <div class="col-sm-9"><p class="mt-2">{{ form.instance.get_campaign_type_display }}</p></div>
+    {% else %}
+        <div class="col-sm-9">{{ form.campaign_type }}</div>
+    {% endif %}
+</div>
+<!-- End Form Group -->
+
+<!-- Form Group -->
+<div class="row form-group">
+    <div class="col-sm-3">
+        <label for="{{ form.title.id_for_label }}" class="col-form-label input-label">
+            캠페인 제목 <small class="text-danger">*</small>
+        </label>
+    </div>
+    <div class="col-sm-9">{{ form.title }}</div>
+</div>
+<!-- End Form Group -->
+
+<!-- Form Group -->
+<div class="row form-group">
+    <div class="col-sm-3">
+        <label for="{{ form.start_datetime.id_for_label }}" class="col-form-label input-label">
+            시작 일시 <small class="text-danger">*</small>
+        </label>
+    </div>
+    <div class="col-sm-9">{{ form.start_datetime }}</div>
+</div>
+<!-- End Form Group -->
+
+<!-- Form Group -->
+<div class="row form-group">
+    <div class="col-sm-3">
+        <label for="addressLine1Label" class="col-form-label input-label text-secondary">
+            종료 일시
+        </label>
+    </div>
+    <div class="col-sm-9">{{ form.end_datetime }}</div>
+</div>
+<!-- End Form Group -->
+
+<!-- Form Group -->
+<div class="row">
+    <label for="zipCodeLabel" class="col-sm-3 col-form-label input-label">
+        배너 이미지 <small class="text-danger">*</small>
+    </label>
+    <div class="col-sm-9">
+        <div class="mb-3 p-2">
+            <div class="custom-control custom-checkbox mb-3">
+                <input type="checkbox" class="custom-control-input" id="request_image"
+                       v-model="request_image">
+                <label class="custom-control-label" for="request_image">이미지 제작 의뢰하기</label>
+            </div>
+        </div>
+        <div v-show="!request_image">
+            <div class="mb-5">
+                <div class="row">
+                    {% for banner in banner_sizes %}
+                        <div class="col-4 pb-5">
+                            * {{ banner.location.1 }}: {{ banner.image_size.0 }}<small>px</small>
+                            x {{ banner.image_size.1 }}<small>px</small>
+                            <span class="avatar avatar-xl avatar-4by3">
+                                <img style="max-height: 100px; max-width: 180px;"
+                                     src="{% static 'biz/img/preview/900x400_img.jpg' %}"
+                                     id="preview_{{ banner.location.0 }}">
+                            </span>
+                        </div>
+                        <div class="col-8 pb-5 text-right">
+                            <input class="images" id="file_{{ banner.location.0 }}"
+                                   key="{{ banner.location.0 }}" type="file" name="image"
+                                   onchange="readURL(this, {{ banner.location.0 }});">
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Form Group -->
+
+<!-- Hidden Form  -->
+{{ form.location }}
+{{ form.campaign_questions }}
+<!-- End Hidden Form -->

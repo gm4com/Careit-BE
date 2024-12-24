@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+
+{% block title %}Server Error{% endblock %}
+{% block meta-title %}Server Error{% endblock %}
+
+
+{% block breadcrumbs-wrapper %}{% endblock %}
+
+
+{% block body %}
+    <div class="error-container">
+        <div class="error-content">
+            <h1>500</h1>
+            <p class="error-title">{% trans 'Unexpected Error' %}</p>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block extra-style %}
+	<style>
+		.error-content h1 {
+			margin: 100px 0 auto;
+			text-align: center;
+		}
+		.error-content p {
+			margin: 20px auto;
+			text-align: center;
+		}
+	</style>
+{% endblock %}

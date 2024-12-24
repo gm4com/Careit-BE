@@ -1,0 +1,8 @@
+{% extends "admin/change_list.html" %}
+
+{% block date_hierarchy %}
+	{% if 'created_datetime__year' in request.GET and 'created_datetime__month' in request.GET %}
+		<a href="/admin/missions/mission/?{{ request.GET.urlencode }}&download=1"><i class="fa fa-lg fa-file-excel-o"></i></a>
+	{% endif %}
+	{{ block.super }}
+{% endblock %}

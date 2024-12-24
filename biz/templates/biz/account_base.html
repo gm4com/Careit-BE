@@ -1,0 +1,139 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Title -->
+    <title>{% block title %}애니비즈 신청{% endblock %}</title>
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- CSS Implementing Plugins -->
+    <link rel="stylesheet" href="{% static 'biz/vendor/icon-set/style.css' %}">
+
+    <!-- CSS Front Template -->
+    <link rel="stylesheet" href="{% static 'biz/css/theme.min.css' %}">
+    {% block add_css %}
+    {% endblock %}
+</head>
+
+<body class="d-flex align-items-center min-h-100">
+
+<!-- ========== HEADER ========== -->
+<header class="position-absolute top-0 left-0 right-0 mt-3 mx-3">
+    <div class="d-flex d-lg-none justify-content-between">
+        <a href="{% url 'biz:join' %}">
+            <h1 class="w-100 pl-3 pt-3">ANYBIZ</h1>
+        </a>
+    </div>
+</header>
+<!-- ========== END HEADER ========== -->
+
+<!-- ========== MAIN CONTENT ========== -->
+<main id="content" role="main" class="main pt-0">
+    <!-- Content -->
+    <div class="container-fluid px-3">
+        <div class="row">
+            <!-- Cover -->
+            <div class="col-lg-6 d-none d-lg-flex justify-content-center align-items-center min-vh-lg-100 position-relative bg-light px-0">
+                <!-- Logo  -->
+                <div class="position-absolute top-0 left-0 right-0 mt-3 mx-3">
+                    <div class="d-none d-lg-flex justify-content-between">
+                        <a href="{% url 'biz:join' %}">
+                            <h1 class="w-100 pl-3 pt-3">ANYBIZ</h1>
+                        </a>
+                    </div>
+                </div>
+                <!-- End Logo -->
+                <div style="max-width: 23rem;">
+                    <div class="text-center mb-5">
+                        <img class="img-fluid" src="{% static 'biz/svg/illustrations/chat.svg' %}"
+                             alt="Image Description" style="width: 12rem;">
+                    </div>
+                    <div class="mb-5">
+                        <h2 class="display-4">애니맨 비즈니스</h2>
+                    </div>
+                    <ul class="list-checked list-checked-lg list-checked-primary list-unstyled-py-4">
+                        <li class="list-checked-item">
+                            <span class="d-block font-weight-bold mb-1">다중 미션</span>
+                            <span>다수의 헬퍼에게 미션을 제공해보세요</span>
+                        </li>
+                        <li class="list-checked-item">
+                            <span class="d-block font-weight-bold mb-1">템플릿 생성</span>
+                            <span>우리 기업에 딱 맞는 요청 양식을 만들어 사용하세요</span>
+                        </li>
+                    </ul>
+                    <div class="row justify-content-between mt-5 gx-2">
+                        <div class="col">
+                            <img class="img-fluid" src="{% static 'biz/svg/brands/gitlab-gray.svg' %}"
+                                 alt="Image Description">
+                        </div>
+                        <div class="col">
+                            <img class="img-fluid" src="{% static 'biz/svg/brands/fitbit-gray.svg' %}"
+                                 alt="Image Description">
+                        </div>
+                        <div class="col">
+                            <img class="img-fluid" src="{% static 'biz/svg/brands/flow-xo-gray.svg' %}"
+                                 alt="Image Description">
+                        </div>
+                        <div class="col">
+                            <img class="img-fluid" src="{% static 'biz/svg/brands/layar-gray.svg' %}"
+                                 alt="Image Description">
+                        </div>
+                    </div>
+                    <!-- End Row -->
+                </div>
+            </div>
+            <!-- End Cover -->
+
+            <div class="col-lg-6 d-flex justify-content-center align-items-center min-vh-lg-100">
+                <!-- Content -->
+                {% block content %}
+                {% endblock %}
+                <!-- End Content -->
+            </div>
+        </div>
+        <!-- End Row -->
+    </div>
+    <!-- End Content -->
+</main>
+<!-- ========== END MAIN CONTENT ========== -->
+
+<!-- JS Global Compulsory  -->
+<script src="{% static 'biz/vendor/jquery/dist/jquery.min.js' %}"></script>
+<script src="{% static 'biz/vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+
+<!-- JS Implementing Plugins -->
+<script src="{% static 'biz/vendor/hs-toggle-password/dist/js/hs-toggle-password.js' %}"></script>
+<script src="{% static 'biz/vendor/jquery-validation/dist/jquery.validate.min.js' %}"></script>
+
+<!-- JS Front -->
+<script src="{% static 'biz/js/theme.min.js' %}"></script>
+
+<!-- JS Plugins Init. -->
+<script>
+    $(document).on('ready', function () {
+        // INITIALIZATION OF SHOW PASSWORD
+        // =======================================================
+        $('.js-toggle-password').each(function () {
+            new HSTogglePassword(this).init()
+        });
+
+        // INITIALIZATION OF FORM VALIDATION
+        // =======================================================
+        $('.js-validate').each(function () {
+            $.HSCore.components.HSValidation.init($(this));
+        });
+    });
+</script>
+<!-- IE Support -->
+<script>
+    if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="{% static 'biz/vendor/babel-polyfill/polyfill.min.js'%}"><\/script>');
+</script>
+{% block add_js %}
+{% endblock %}
+</body>
+</html>

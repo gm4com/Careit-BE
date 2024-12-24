@@ -1,0 +1,21 @@
+{% extends 'biz/base.html'%}
+{% load static %}
+
+
+{% block title %}애니비즈 403 error{% endblock %}
+
+{% block content%}
+    <div class="row align-items-sm-center py-sm-10">
+        <div class="col-sm-6">
+            <div class="text-center text-sm-right mr-sm-4 mb-5 mb-sm-0">
+                <img class="w-60 w-sm-100 mx-auto" src="{% static 'biz/svg/illustrations/think.svg'%}"
+                     alt="Image Description" style="max-width: 15rem;">
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-4 text-center text-sm-left">
+            <h1 class="display-1 mb-0">403-error</h1>
+            <p class="lead">해당 애니비즈에 접근 권한이 없거나 가입되지 않았습니다.</p>
+            <a class="btn btn-lg btn-primary" href="{% url 'biz:joined' %}">참여중인 애니비즈 확인하기</a>
+        </div>
+    </div>
+{% endblock %}

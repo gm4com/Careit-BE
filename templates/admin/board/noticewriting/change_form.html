@@ -1,0 +1,10 @@
+{% extends 'admin/change_form_split.html' %}
+
+{% block object-tools-items %}
+    {% if view_notification_button %}
+    <li>
+        <a href="/admin/board/noticewriting/{{ original.id }}/add_notification/" class="btn btn-primary">앱 알림 목록에 추가</a>
+    </li>
+    {% endif %}
+    {{ block.super }}
+{% endblock %}

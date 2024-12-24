@@ -1,0 +1,16 @@
+{% extends '500.html' %}
+{% load i18n %}
+
+
+{% block title %}Permission Denied{% endblock %}
+{% block meta-title %}Permission Denied{% endblock %}
+
+
+{% block body %}
+    <div class="error-container">
+        <div class="error-content">
+            <h1>403</h1>
+            <p class="error-title">{% trans 'Permission Denied' %}</p>
+        </div>
+    </div>
+{% endblock %}

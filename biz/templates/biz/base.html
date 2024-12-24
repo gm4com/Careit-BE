@@ -1,0 +1,242 @@
+{% load static %}
+{% load biz_admin %}
+{% load biz_front %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Title -->
+    <title>{% block title %}애니비즈{% endblock %}</title>
+
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- CSS Implementing Plugins -->
+    <link rel="stylesheet" href="{% static 'biz/vendor/icon-set/style.css' %}">
+
+    <!-- CSS Front Template -->
+    <link rel="stylesheet" href="{% static 'biz/css/theme.min.css' %}">
+
+    {% block add_css %}
+    {% endblock %}
+    <script src="{% static 'biz/vendor/jquery/dist/jquery.min.js' %}"></script>
+    {#    <!-- 개발버전, 도움되는 콘솔 경고를 포함. -->#}
+    {#    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>#}
+    {#    <!-- 상용버전, 속도와 용량이 최적화됨. -->#}
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+</head>
+
+<body class="has-navbar-vertical-aside navbar-vertical-aside-show-xl   footer-offset">
+
+<script src="{% static 'biz/vendor/hs-navbar-vertical-aside/hs-navbar-vertical-aside-mini-cache.js' %}"></script>
+
+<!-- ========== HEADER ========== -->
+
+<header id="header" class="navbar navbar-expand-lg navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered">
+
+    <!--  Navbar -->
+    <div class="navbar-nav-wrap">
+        <!-- Logo -->
+        <a href="{% url 'biz:dashboard' partnership.code %}">
+            <div class="navbar-brand-wrapper">
+                <b>Anyman biz</b>
+            </div>
+        </a>
+        <!-- End Logo -->
+
+        <!-- Navbar Vertical Toggle -->
+        <div class="navbar-nav-wrap-content-left">
+            <button type="button" class="js-navbar-vertical-aside-toggle-invoker close mr-3">
+                <i class="tio-first-page navbar-vertical-aside-toggle-short-align" data-toggle="tooltip"
+                   data-placement="right" title="닫기"></i>
+                <i class="tio-last-page navbar-vertical-aside-toggle-full-align"
+                   data-template='<div class="tooltip d-none d-sm-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'
+                   data-toggle="tooltip" data-placement="right" title="열기"></i>
+            </button>
+        </div>
+        <!-- End Navbar Vertical Toggle -->
+
+        <!-- Partnership List Content -->
+        <div class="navbar-nav-wrap-content-right">
+            <ul class="navbar-nav align-items-center flex-row">
+                <li class="nav-item">
+                    <div>{{ partnership.name }}</div>
+                </li>
+                <li class="nav-item">
+                    <div class="hs-unfold">
+                        <a class="js-hs-unfold-invoker btn btn-icon btn-ghost-secondary rounded-circle" data-hs-unfold-options='{"target": "#appsDropdown", "type": "css-animation"}'>
+                            <i class="tio-menu-vs-outlined"></i>
+                        </a>
+                        <div id="appsDropdown"
+                             class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right navbar-dropdown-menu"
+                             style="width: 25rem;">
+                            <!-- Header -->
+                            <div class="card-header">
+                                <span class="card-title h4">파트너쉽 리스트</span>
+                            </div>
+                            <!-- End Header -->
+
+                            <!-- Partnerships -->
+                            <div class="card-body card-body-height">
+                                <div class="nav nav-pills flex-column">
+                                    {% for partnership_obj in partnerships %}
+                                        <a class="nav-link" href="{% url 'biz:dashboard' partnership_obj.code %}">
+                                            <div class="media align-items-center">
+                                                <div class="media-body text-truncate">
+                                                   <span class="h5 mb-0">{{ partnership_obj.name }}
+                                                        <small class="float-right badge badge-soft-{{ partnership_obj.state|get_request_accept_status_style_class }} badge-pill text-uppercase ml-1">
+                                                        {{ partnership_obj.state|get_request_accept_status_text }}
+                                                        </small>
+                                                    </span>
+                                                    <span class="d-block font-size-sm text-body">
+                                                        {% if partnership_obj.address_detail %}
+                                                            {{ partnership_obj.address_detail }}
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <!-- End Partnerships -->
+
+                            <!-- Footer -->
+                            <div class="card-footer text-center"></div>
+                            <!-- End Footer -->
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Account -->
+                <li class="nav-item">
+                    <div class="hs-unfold">
+                        <a class="js-hs-unfold-invoker navbar-dropdown-account-wrapper" href="javascript:;"
+                           data-hs-unfold-options='{ "target": "#accountNavbarDropdown", "type": "css-animation"  }'>
+                            <div class="avatar avatar-sm avatar-circle">
+                                <img id="avatarImg" class="avatar-img" src="{% static 'biz/img/preview/user.jpg' %}" alt="Image Description">
+                            </div>
+                        </a>
+                        <div id="accountNavbarDropdown"
+                             class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right navbar-dropdown-menu navbar-dropdown-account"
+                             style="width: 16rem;">
+                            <div class="dropdown-item-text">
+                                <div class="media align-items-center">
+                                    <div class="media-body">
+                                        <span class="card-title h5"></span>
+                                        <span class="card-text">{{ request.user.email }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'biz:logout' %}">
+                                <span class="text-truncate pr-2" title="로그아웃">로그아웃</span>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                <!-- End Account -->
+            </ul>
+        </div>
+        <!-- End Partnership ListContent -->
+    </div>
+    <!-- Eed Navbar -->
+</header>
+<!-- ========== END HEADER ========== -->
+
+<!-- ========== SIDE NAVBAR ========== -->
+
+<aside class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered  ">
+    <div class="navbar-vertical-container">
+        <div class="navbar-vertical-footer-offset">
+            <div class="navbar-brand-wrapper justify-content-between">
+                <!-- Logo -->
+                <a href="{% url 'biz:dashboard' partnership.code %}">
+                    <h2 class="text-secondary">애니비즈 <small>Anybiz</small></h2>
+                </a>
+                <!-- End Logo -->
+
+                <!-- Navbar Vertical Toggle -->
+                <button type="button"
+                        class="js-navbar-vertical-aside-toggle-invoker navbar-vertical-aside-toggle btn btn-icon btn-xs btn-ghost-dark">
+                    <i class="tio-clear tio-lg"></i>
+                </button>
+                <!-- End Navbar Vertical Toggle -->
+            </div>
+
+            <!-- Side Bar -->
+            {% include 'biz/include/base_sidebar.html' %}
+            <!-- End Side Bar -->
+
+        </div>
+    </div>
+</aside>
+<!-- ========== END SIDE NAVBAR ========== -->
+
+<!-- ========== CONTENT ========== -->
+
+<main id="content" role="main" class="main">
+    <!-- Content -->
+    <div class="content container-fluid">
+
+        {% include 'biz/include/messages.html' %}
+
+        {% block content %}
+        {% endblock %}
+    </div>
+    <!-- End Content -->
+</main>
+<!-- ========== END CONTENT ========== -->
+
+<!-- JS Global Compulsory  -->
+<script src="{% static 'biz/vendor/jquery-migrate/dist/jquery-migrate.min.js' %}"></script>
+<script src="{% static 'biz/vendor/bootstrap/dist/js/bootstrap.bundle.min.js' %}"></script>
+
+<!-- JS Implementing Plugins -->
+<script src="{% static 'biz/vendor/hs-navbar-vertical-aside/hs-navbar-vertical-aside.min.js' %}"></script>
+<script src="{% static 'biz/vendor/hs-unfold/dist/hs-unfold.min.js' %}"></script>
+
+<!-- JS Front -->
+<script src="{% static 'biz/js/theme.min.js' %}"></script>
+
+<!-- JS Plugins Init. -->
+<script>
+    $(document).on('ready', function () {
+        // BUILDER TOGGLE INVOKER
+        $('.js-navbar-vertical-aside-toggle-invoker').click(function () {
+            $('.js-navbar-vertical-aside-toggle-invoker i').tooltip('hide');
+        });
+
+        // INITIALIZATION OF NAVBAR VERTICAL NAVIGATION
+        let sidebar = $('.js-navbar-vertical-aside').hsSideNav();
+
+        // INITIALIZATION OF TOOLTIP IN NAVBAR VERTICAL MENU
+        // =======================================================
+        $('.js-nav-tooltip-link').tooltip({boundary: 'window'})
+
+        $(".js-nav-tooltip-link").on("show.bs.tooltip", function (e) {
+            if (!$("body").hasClass("navbar-vertical-aside-mini-mode")) {
+                return false;
+            }
+        });
+
+        // INITIALIZATION OF UNFOLD
+        $('.js-hs-unfold-invoker').each(function () {
+            let unfold = new HSUnfold($(this)).init();
+        });
+    });
+</script>
+
+<!-- IE Support -->
+<script>
+    if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="{% static 'biz/vendor/babel-polyfill/polyfill.min.js'%}"><\/script>');
+</script>
+
+{% block add_js %}
+{% endblock %}
+
+</body>
+</html>

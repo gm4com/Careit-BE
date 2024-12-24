@@ -1,0 +1,11 @@
+{% extends "admin/change_form_split.html" %}
+{% load admin_modify admin_urls internal common %}
+
+
+{% block object-tools-items %}
+	{% if original and original.can_cancel %}
+		<li><a href="{% url 'admin:payment_payment_cancel' original.id %}" class="btn btn-danger">결제 취소</a></li>
+	{% endif %}
+	{% change_form_object_tools %}
+{% endblock %}
+

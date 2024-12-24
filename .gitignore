@@ -1,0 +1,37 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Log
+*.log
+*.log.*
+
+# Secure stuff
+web/settings_*.py
+web/conf/*.json
+web/conf/*.pem
+
+# Django Static
+static/
+
+# Django Media
+media/
+
+# virtualenv
+.venv
+venv/
+venvi/
+
+# IDE
+.idea/
+.vscode/
+sftp-config.json
+
+# OS files
+.DS_Store
+.icloud
+
+# temporary html files
+common/templates/_*
+

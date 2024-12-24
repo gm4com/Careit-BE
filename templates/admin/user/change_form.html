@@ -1,0 +1,281 @@
+{% extends "admin/change_form_split.html" %}
+{% load admin_modify admin_urls internal common %}
+
+
+{% block split-left %}5{% endblock %}
+{% block split-right %}7{% endblock %}
+
+
+{% block object-tools-items %}
+	<li>
+		<div class="dropdown">
+			<div class="btn-group">
+				<button class="btn btn-outline-dark">고객등급</button>
+			<button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+			        aria-haspopup="true" aria-expanded="false">
+				{{ original.level }}
+			</button>
+			<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+				{% for i in 1|range:6 %}
+					{% if original.level == i %}
+						<button type="button" class="active dropdown-item">{{ i }}</button>
+					{% else %}
+						<button type="button" class="dropdown-item btn-level-change" data-level="{{ i }}" data-toggle="modal" data-target="#level-change">{{ i }}</button>
+					{% endif %}
+				{% endfor %}
+				<div class="dropdown-divider"></div>
+				<a class="dropdown-item" href="{% url 'admin:admin_logentry_changelist' %}?action_flag=2&content_type__id__exact={{ content_type_id }}&object_id={{ original.id }}&change_message__contains=level">변경이력 보기</a>
+			</div>
+			</div>
+		</div>
+	</li>
+	<li>
+		<div class="dropdown">
+			<div class="btn-group">
+				<button class="btn btn-outline-dark">상태</button>
+			<button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
+			        aria-haspopup="true" aria-expanded="false">
+				{{ original.get_state_display }}
+			</button>
+			<div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+				{% if original.is_active %}
+					<a class="dropdown-item" href="{% url 'admin:accounts_user_deactivate' id=original.id %}">비활성화하기</a>
+				{% else %}
+					<a class="dropdown-item" href="{% url 'admin:accounts_user_activate' id=original.id %}">활성화하기</a>
+				{% endif %}
+				{% if original.is_service_blocked %}
+					<button type="button" class="dropdown-item btn-user-unblock" data-toggle="modal" data-target="#user-unblock">차단 해제하기</button>
+				{% else %}
+					<button type="button" class="dropdown-item btn-user-block" data-toggle="modal" data-target="#user-block">차단하기</button>
+				{% endif %}
+			</div>
+			</div>
+		</div>
+	</li>
+	{% if original.helper %}
+		<li><a href="{% url 'admin:accounts_helper_change' original.helper.id %}" class="btn btn-info" disabled="true">헬퍼 정보</a></li>
+		<li><a class="btn btn-success" href="{% url 'admin:payment_withdraw_changelist' %}?helper_id={{ original.helper.id }}">캐쉬 인출 내역</a></li>
+		<li><a class="btn btn-success" href="{% url 'admin:payment_cash_changelist' %}?helper_id={{ original.helper.id }}">캐쉬 내역</a></li>
+	{% endif %}
+	<li><a class="btn btn-success" href="{% url 'admin:payment_point_changelist' %}?user_id={{ original.id }}">포인트 내역</a></li>
+	<li><a class="btn btn-success" href="{% url 'admin:payment_payment_changelist' %}?q=U{{ original.code }}">결제 내역</a></li>
+	{% change_form_object_tools %}
+{% endblock %}
+
+
+{% block inline_field_sets %}
+	{% if original %}
+		<div class="row inline-group rounded-10 bg-light mb-3">
+			<div class="col-4 mt-3 mb-3">
+				<p class="text-center text-secondary"><i class="fa fa-4x fa-gift"></i></p>
+				<a class="text-" href="{% url 'admin:payment_point_changelist' %}?user_id={{ original.id }}">
+					<h3 class="text-center">{{ original.point_balance|add_comma }}</h3>
+					<h6 class="text-center">포인트</h6>
+					<a class="btn btn-sm btn-warning btn-block related-widget-wrapper-link add-related" id="add_id_groups" href="/admin/payment/point/add/?_to_field=id&_popup=1&user_id={{ original.id }}">포인트 내역 추가</a>
+				</a>
+			</div>
+			<div class="col-4 mt-3 mb-3">
+				<p class="text-center text-secondary"><i class="fa fa-4x fa-star"></i></p>
+				<a href="{% url 'admin:missions_review_changelist' %}?target_customer_id={{ original.id }}">
+					<h3 class="text-center">{{ original.user_review_average_stars }} <small>({{ original.user_review_count }})</small></h3>
+					<h6 class="text-center">평가</h6>
+				</a>
+			</div>
+			<div class="col-4 mt-3 mb-3">
+				<p class="text-center text-secondary"><i class="fa fa-4x fa-warning"></i></p>
+				<a href="{% url 'admin:missions_report_changelist' %}?target_customer_id={{ original.id }}">
+					<h3 class="text-center">{{ original.reported.count }}</h3>
+					<h6 class="text-center">신고됨</h6>
+				</a>
+			</div>
+		</div>
+		<div class="inline-group">
+			<a href="{% url 'admin:missions_mission_changelist' %}?user_id={{ original.id }}">
+				<h2>미션</h2>
+			</a>
+			<div class="row inline-group bg-light mb-3">
+				<div class="col-3 mt-3 mb-3">
+					<p class="text-center text-secondary"><i class="fa fa-4x fa-files-o"></i></p>
+					<a href="{% url 'admin:missions_mission_changelist' %}?user_id={{ original.id }}&state=bidding">
+						<h3 class="text-center">{{ original.mission_bidding_count }}</h3>
+						<h6 class="text-center">입찰중</h6>
+					</a>
+				</div>
+				<div class="col-3 mt-3 mb-3">
+					<p class="text-center text-secondary"><i class="fa fa-4x fa-play"></i></p>
+					<a href="{% url 'admin:missions_mission_changelist' %}?user_id={{ original.id }}&state=in_action">
+						<h3 class="text-center">{{ original.mission_in_action_count }}</h3>
+						<h6 class="text-center">수행중</h6>
+					</a>
+				</div>
+				<div class="col-3 mt-3 mb-3">
+					<p class="text-center text-secondary"><i class="fa fa-4x fa-check-square-o"></i></p>
+					<a href="{% url 'admin:missions_mission_changelist' %}?user_id={{ original.id }}&state=done">
+						<h3 class="text-center">{{ original.mission_done_count|add_comma }}</h3>
+						<h6 class="text-center">완료</h6>
+					</a>
+				</div>
+				<div class="col-3 mt-3 mb-3">
+					<p class="text-center text-secondary"><i class="fa fa-4x fa-trash-o"></i></p>
+					<a href="{% url 'admin:missions_mission_changelist' %}?user_id={{ original.id }}&state=canceled">
+						<h3 class="text-center">{{ original.missions.canceled_saved.count|add_comma }}</h3>
+						<h6 class="text-center">취소</h6>
+					</a>
+				</div>
+			</div>
+		</div>
+
+	{% endif %}
+
+	{{ block.super }}
+{% endblock %}
+
+
+{% block footer %}
+	{{ block.super }}
+
+	<div class="confirm modal" id="level-change">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<form action="{% url 'admin:accounts_user_change_level' id=original.id %}" method="post">
+					<div class="modal-header">
+						<h5 class="modal-title">고객 등급변경</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-12">
+								<p><strong>{{ original.username }}</strong> 회원의 고객등급을 <strong><span id="new-level-text"></span>등급</strong>으로 변경합니다.</p>
+							</div>
+							<div class="col-12">
+								{% csrf_token %}
+								<input type="hidden" name="level" id="new-level">
+								<div class="form-group">
+									<label for="reason">등급 변경 사유</label>
+									<textarea name="reason" id="reason" cols="30" rows="4" class="form-control"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+						<button type="submit" class="btn btn-primary btn-modal-confirm">등급 변경</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="confirm modal" id="user-block">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<form action="{% url 'admin:accounts_user_block' id=original.id %}" method="post">
+					<div class="modal-header">
+						<h5 class="modal-title">회원 차단</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-12">
+								<p><strong>{{ original.username }}</strong> 회원을 차단합니다.</p>
+							</div>
+							<div class="col-12">
+								<div class="form-group">
+									<label for="days">차단 일수</label>
+									<input type="number" name="days" id="days" class="form-control">
+								    <div class="invalid-feedback">1 이상의 숫자로 차단할 일수를 입력해주세요.</div>
+								</div>
+								{% csrf_token %}
+								<div class="form-group">
+									<label for="reason">차단 사유</label>
+									<textarea name="reason" id="reason" cols="30" rows="4" class="form-control"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+						<button type="submit" class="btn btn-primary btn-modal-confirm">차단</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="confirm modal" id="user-unblock">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<form action="{% url 'admin:accounts_user_unblock' id=original.id %}" method="post">
+					<div class="modal-header">
+						<h5 class="modal-title">회원 차단해제</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-12">
+								<p><strong>{{ original.username }}</strong> 회원을 차단해제합니다.</p>
+							</div>
+							<div class="col-12">
+{#								<div class="form-group">#}
+{#									<label for="days">차단해제 일수</label>#}
+{#									<input type="number" name="days" id="days" class="form-control">#}
+{#								    <div class="invalid-feedback">1 이상의 숫자로 차단할 일수를 입력해주세요.</div>#}
+{#								</div>#}
+								{% csrf_token %}
+								<div class="form-group">
+									<label for="reason">차단해제 사유</label>
+									<textarea name="reason" id="reason" cols="30" rows="4" class="form-control"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>
+						<button type="submit" class="btn btn-primary btn-modal-confirm">차단해제</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+{% block after_script %}
+	<style>
+		#customer_services-group fieldset tr:nth-last-child(3) td:nth-last-child(1) {
+			display: none;
+		}
+	</style>
+
+	<script>
+		// 모달에 폼이 있는 경우 첫번째 폼에 포커스
+		$('.modal').on('shown.bs.modal', function () {
+			var $first_input = $(this).find('form .form-control:first');
+			if ($first_input.length > 0) $first_input.trigger('focus');
+		});
+
+		$('.btn-level-change').on('click', function () {
+			var level = $(this).data('level');
+			$('#level-change #new-level-text').text(level);
+			$('#level-change #new-level').val(level);
+		});
+
+		$('#user-block form').on('submit', function (e) {
+			e.preventDefault();
+			$(this).find('.form-control').removeClass('is-invalid');
+			var $days = $(this).find('#days');
+			var days = $days.val();
+			if ($.isNumeric(days) && days > 0) {
+				$(this).unbind('submit').submit();
+				return true;
+			}
+			$days.addClass('is-invalid').trigger('focus');
+		});
+	</script>
+{% endblock %}

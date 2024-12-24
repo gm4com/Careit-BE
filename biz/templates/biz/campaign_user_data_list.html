@@ -1,0 +1,88 @@
+{% extends 'biz/base.html' %}
+{% load static %}
+{% load biz_front %}
+
+{% block title %}캠페인 데이터{% endblock %}
+
+{% block add_css %}
+    <style>
+        .thumbnail_banner_img {
+            max-height: 80px;
+            max-width: 80px;
+        }
+        .max-w-400 {
+            max-width: 400px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+        <div class="row align-items-end">
+            <div class="col-sm mb-2 mb-sm-0">
+                <a href="{% url 'biz:campaign-list' partnership.code %}">
+                    <i class="tio-list mr-1"></i>&lt; 캠페인
+                </a>
+                <h1 class="page-header-title">[{{ campaign.title }}] <small>데이터</small></h1>
+            </div>
+        </div>
+    </div>
+
+    {% if 'campaigns' in partnership.services %}
+
+        <div class="card">
+            <div class="table-responsive datatable-custom">
+                <div id="datatable_wrapper" class="dataTables_wrapper no-footer">
+                    <table class="table table-lg table-borderless table-thead-bordered table-nowrap table-align-middle card-table dataTable no-footer"
+                        role="grid" aria-describedby="datatable_info">
+                        <thead class="thead-light">
+                            <tr role="row">
+                                <th>유져</th>
+                                <th>클릭</th>
+                                <th>작성</th>
+                                {% for q in campaign.fields %}
+                                    <th>{{ q.name }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in object_list %}
+                                <tr role="row">
+                                    <td>{{ data.user_display }}</td>
+                                    <td>{{ data.clicked_datetime|date:'Y.m.d H:i' }}<br/>{{ data.banner.get_location_display }}</td>
+                                    <td>{{ data.answered_datetime|date:'Y.m.d H:i' }}</td>
+                                    {% for answer in data.answer_display %}
+                                        {% if answer.is_file %}
+                                            <td>
+                                                {% for u in answer.val %}
+                                                    <a href="{{ u }}"><i class="tio-file nav-icon"></i></a>
+                                                {% empty %}
+                                                    파일 없음
+                                                {% endfor %}
+                                            </td>
+                                        {% else %}
+                                            <td>{{ answer.val }}</td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if is_paginated %}
+                {% include 'biz/include/pagination.html' %}
+            {% endif %}
+
+        </div>
+
+    {% else %}
+        애니비즈 캠페인은 광고, 시장조사, 리서치 등에 애니맨을 활용하고, 회원의 피드백 데이터를 수집할 수 있는 기능입니다.<br/>
+        사전 충전된 결제액에서 이용요금이 건당 정산되어 차감됩니다.
+        <br/><br/>
+        <a href="{% url 'biz:service-request' partnership.code 'campaigns' %}" class="btn btn-sm btn-primary">캠페인 사용 활성화</a>
+    {% endif %}
+
+{% endblock %}

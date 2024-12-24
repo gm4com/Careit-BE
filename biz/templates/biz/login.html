@@ -1,0 +1,52 @@
+{% extends 'biz/account_base.html' %}
+{% load static %}
+
+
+{% block title %}애니비즈 로그인{% endblock %}
+
+{% block content %}
+    <div class="w-100 pt-10 pt-lg-7 pb-7" style="max-width: 25rem;">
+            <!-- Form -->
+            <form class="js-validate" method="POST">
+                {% csrf_token %}
+                <div class="text-center mb-5">
+                    <h1 class="display-4">애니비즈 로그인</h1>
+                </div>
+
+                {% include 'biz/include/messages.html' %}
+
+                <!-- Form Group -->
+                <div class="js-form-message form-group">
+                    <label class="input-label" for="id_email">이메일</label>
+                    <div class="input-group input-group-merge">{{ form.email }}</div>
+                </div>
+                <!-- End Form Group -->
+
+                <!-- Form Group -->
+                <div class="js-form-message form-group">
+                    <label class="input-label" for="id_password">비밀번호</label>
+                    <div class="input-group input-group-merge">
+                        {{ form.password }}
+                        <div id="changePassTarget" class="input-group-append">
+                            <a class="input-group-text" href="javascript:;">
+                                <i id="changePassIcon" class="tio-visible-outlined"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Form Group -->
+                <button type="submit" class="btn btn-lg btn-block btn-primary">로그인</button>
+            </form>
+            <!-- Een Form -->
+
+        <div class="text-center pt-3">
+            <span class="divider text-muted mb-4">OR</span>
+            <p>아직 애니비즈 신청하지 않으셨나요?</p>
+        </div>
+        <!-- Join -->
+        <a class="btn btn-lg btn-block btn-white mb-4" href="{% url 'biz:join' %}">
+            <span class="d-flex justify-content-center align-items-center">애니비즈 가입</span>
+        </a>
+        <!-- End Join -->
+    </div>
+{% endblock %}

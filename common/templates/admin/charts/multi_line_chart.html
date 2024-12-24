@@ -1,0 +1,156 @@
+{% load common %}
+
+<div class="row">
+
+	{% if chart_class %}
+		<div class="{{ chart_class }} mb-4">
+			<canvas id="{{ id }}" class="chart-canvas"></canvas>
+		</div>
+	{% endif %}
+
+	{% if table_class %}
+		<div class="{{ table_class }} mb-4">
+			<table class="table multi-item-table table-striped">
+				<thead>
+					<tr>
+						<th></th>
+						{% for label in data.labels %}
+							<th>{{ label.3 }}{{ label.4 }}</th>
+						{% endfor %}
+					</tr>
+				</thead>
+				<tbody>
+				{% for dataset in data.datasets %}
+					<tr>
+						<th>{{ dataset.label }}</th>
+						{% for col in dataset.data %}
+							<td>{{ col|add_comma }}</td>
+						{% endfor %}
+					</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	{% endif %}
+
+	<div class="col-12">
+		<div class="row">
+
+			{% if sub_chart_class %}
+				<div class="{{ sub_chart_class }}">
+					<canvas id="{{ id }}_sub_pie" class="chart-canvas sub-chart{% if not chart_class %} only{% endif %}"></canvas>
+				</div>
+			{% endif %}
+
+			{% if sub_table_class %}
+				<div class="{{ sub_table_class }}">
+
+					<h2 class="text-center table-title">{{ sub_table_data.title }}</h2>
+					<table class="table table-description table-striped">
+						<tbody>
+							{% if sub_table_data.data.0|length == 2 %}
+								{% for sub_table in sub_table_data.data %}
+									<tr>
+										<td>{{ unit_prefix }}{{ sub_table.1 }}{{ unit_suffix }}</td>
+										<th>{{ sub_table.0 }}</th>
+									</tr>
+								{% endfor %}
+							{% else %}
+								{% for sub_table in sub_table_data.data %}
+									<tr>
+										<th>{{ sub_table }}</th>
+									</tr>
+								{% endfor %}
+							{% endif %}
+						</tbody>
+					</table>
+
+				</div>
+			{% endif %}
+		</div>
+	</div>
+
+	{% if description_class %}
+		<div class="col-12">
+			{{ description }}
+		</div>
+	{% endif %}
+
+</div>
+
+
+<style>
+	.chart-canvas.sub-chart {
+		padding: 2em;
+		max-height: 350px;
+		min-height: 300px;
+	}
+	.chart-canvas.sub-chart.only {
+		max-height: 550px;
+		min-height: 500px;
+	}
+	.table-title, table.table-description th, table.table-description td {
+		font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+		font-weight: 200;
+	}
+	.table-title {
+		font-size: 3em;
+		font-weight: 100;
+	}
+	table.table-description th {
+		text-align: left;
+		width: 50%;
+		font-size: 1em;
+		line-height: 1.1rem;
+	}
+	table.table-description td {
+		text-align: right;
+		width: 50%;
+		font-size: 1.1em;
+		line-height: 1.1rem;
+	}
+</style>
+
+<script>
+	{% if chart_class %}
+		var chart_{{ id }} = new Chart(document.getElementById("{{ id }}"), {
+			type: '{{ type }}',
+			data: {{ data }},
+		{% if options %}
+			options: {{ options }}
+		{% else %}
+			options: {
+				tooltips: {
+					callbacks: {
+						label: function (tooltipItem, data) {
+							return data.datasets[tooltipItem.datasetIndex].label + ' : '
+								+ '{{ unit_prefix }}' + addCommas(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index])
+								+ '{{ unit_suffix }}';
+						}
+					}
+				}
+			}
+		{% endif %}
+		});
+
+	{% endif %}
+
+	{% if sub_chart_class %}
+
+		var chart_{{ id }} = new Chart(document.getElementById("{{ id }}_sub_pie"), {
+			type: 'pie',
+			data: {{ sub_chart_data|to_json|safe }},
+			options: {
+				{% if chart_class %}
+				legend: {
+					display: false
+				},
+				{% endif %}
+				responsive: true,
+				maintainAspectRatio: false
+			}
+		});
+
+	{% endif %}
+
+</script>

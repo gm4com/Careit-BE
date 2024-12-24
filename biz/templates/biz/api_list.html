@@ -1,0 +1,140 @@
+{% extends 'biz/base.html'%}
+{% load static common %}
+
+
+{% block content %}
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="row align-items-end">
+            <div class="col-sm mb-2 mb-sm-0">
+                <h1 class="page-header-title">미션 API</h1>
+            </div>
+        </div>
+        <!-- End Row -->
+    </div>
+    <!-- End Page Header -->
+
+    {% if 'apis' in partnership.services %}
+
+        <div class="card mb-5">
+            <div class="card-header">
+                <h5>
+                    API 연동 정보
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>테스트 서버 API Host : https://test.anyman.co.kr/api/v1/</li>
+                    <li>프로덕션 서버 API Host : https://api.anyman.co.kr/api/v1/</li>
+                    <li>인증 코드 : {{partnership.code}}</li>
+                    <li>인증 시크릿 : 생성시에만 화면에 표시됩니다. 만약 잊어버리거나 노출되었을 것으로 의심되는 경우, 
+                        <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#resetSecret">시크릿 재생성</button>
+                            을 해주십시오.</li>
+                    <li>연동 개발과 관련해서는 <a href="https://test.anyman.co.kr/api/v1/explore/">API Specification</a>을 참고해주십시오.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Card -->
+        <div class="card">
+
+            <!-- Table -->
+            <div class="table-responsive datatable-custom">
+                <div id="datatable_wrapper" class="dataTables_wrapper no-footer">
+                    <div id="datatable_filter" class="dataTables_filter">
+                        <label>Search:<input type="search" class="" placeholder="" aria-controls="datatable"></label>
+                    </div>
+                    <table class="table table-lg table-borderless table-thead-bordered table-nowrap table-align-middle card-table dataTable no-footer"
+                        role="grid" aria-describedby="datatable_info">
+                        <thead class="thead-light">
+                            <tr role="row">
+                                <th>템플릿 ID</th>
+                                <th>템플릿명</th>
+                                <th>내용 입력항목</th>
+                                <th>내용 표시방법</th>
+                                <th>매칭 성공시 호출 URL</th>
+                                <th>미션</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for template in object_list %}
+                                <tr role="row">
+                                    <td>{{ template.id }}</td>
+                                    <td>{{ template.name }}</td>
+                                    <td>
+                                        {% for field in template.fields_for_api %}
+                                            {{ field.name }} 
+                                            <span class="small text-secondary">({{ field.question_type }})</span>
+                                            {% if field.is_required %}<span class="small text-warning"> *</span>{% endif %}
+                                            <br/>
+                                        {% endfor %}
+                                    </td>
+                                    <td><p style="max-width: 200px; white-space: break-spaces;">{{ template.content_display_html }}</p></td>
+                                    <td>{{ template.matching_success_url}}</td>
+                                    <td>
+                                        <p class="text-center">{{ template.missions.count|add_comma }}</p>
+                                        <a class="btn btn-sm btn-white btn-block" href="{% url 'biz:api-data-list' partnership.code template.id %}">
+                                            <i class="tio-write"></i> 미션 보기
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6">
+                                        <p class="alert alert-soft-info text-center mt-3">
+                                            이용중인 미션 API가 없습니다.
+                                        </p>
+                                        <p class="text-center">
+                                            미션 API에 템플릿을 추가하는 작업은 웹상에서 진행할 수 없습니다.<br/>
+                                            애니맨 미션과 귀사 서비스의 연동을 원하시는 경우,<br/> 
+                                            애니맨에 직접 연락주시기 바랍니다.<br/>
+                                        </p>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- End Table -->
+
+            {% if is_paginated %}
+                {% include 'biz/include/pagination.html' %}
+            {% endif %}
+
+        </div>
+        <!-- End Card -->
+
+        <div class="modal fade" id="resetSecret" tabindex="-1" aria-labelledby="resetSecretLabel" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="resetSecretLabel">시크릿 재생성</h5>
+                        <button type="button" class="btn btn-icon btn-sm btn-ghost-secondary" data-dismiss="modal"
+                                aria-label="Close">
+                            <i class="tio-clear tio-lg" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        시크릿의 재생성은 실행 즉시 반영되어 토큰 인증에 영향을 주게 됩니다. <br/>
+                        기존에 연동중인 모든 서비스에서 재생성 즉시 시크릿을 변경하지 않으면, 인증에 문제가 생기며 서비스가 정상적으로 진행되지 않을 수도 있습니다.<br/>
+                        이것을 이해하고도 재생성을 원하시는 경우에만 진행해주십시오.
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">닫기</button>
+                        <form action="{% url 'biz:api-secret-reset' partnership.code %}" method="post">{% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">시크릿 재생성</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    {% else %}
+        미션 API를 이용하면 애니맨의 헬퍼 매칭 서비스를 귀사의 서비스와 연동하여 사용할 수 있습니다. <br/>
+        API 사용을 원하시는 경우, 애니맨으로 직접 연락 주시기 바랍니다.
+    {% endif %}
+
+{% endblock %}

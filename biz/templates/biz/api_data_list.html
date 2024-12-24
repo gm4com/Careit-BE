@@ -1,0 +1,117 @@
+{% extends 'biz/base.html'%}
+{% load static common %}
+
+
+{% block content %}
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="row align-items-end">
+            <div class="col-sm mb-2 mb-sm-0">
+                <h1 class="page-header-title">미션 API</h1>
+            </div>
+        </div>
+        <!-- End Row -->
+    </div>
+    <!-- End Page Header -->
+
+    <!-- Card -->
+    <div class="card">
+
+        <!-- Header -->
+        <div class="card-header">
+            <div class="row justify-content-between align-items-center flex-grow-1">
+                <div class="col-sm-6">
+                    <h5>{{ template.name }}</h5>
+                </div>
+                <div class="col-sm-6 col-md-4 mb-3 mb-sm-0">
+                    <form action="">
+                        <!-- Search -->
+                        <div class="input-group input-group-merge input-group-flush">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                    <i class="tio-search"></i>
+                                </div>
+                            </div>
+                            <input id="q" name="q" type="search" class="form-control" placeholder="검색" aria-label="Search" value="{{ request.GET.q }}">
+                        </div>
+                        <!-- End Search -->
+                    </form>
+                </div>
+            </div>
+            <!-- End Row -->
+        </div>
+        <!-- End Header -->
+
+
+        <!-- Table -->
+        <div class="table-responsive datatable-custom">
+            <div id="datatable_wrapper" class="dataTables_wrapper no-footer">
+                <div id="datatable_filter" class="dataTables_filter">
+                    <label>Search:<input type="search" class="" placeholder="" aria-controls="datatable"></label>
+                </div>
+                <table class="table table-lg table-borderless table-thead-bordered table-striped table-nowrap table-align-middle card-table dataTable no-footer"
+                       role="grid" aria-describedby="datatable_info">
+                    <thead class="thead-light">
+                        <tr role="row">
+                            <th>미션 코드</th>
+                            <th>고객</th>
+                            <th>요청 내용</th>
+                            <th>미션 타임라인</th>
+                            <th>미션 상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mission in object_list %}
+                            <tr role="row">
+                                <td>{{ mission.code }}</td>
+                                <td>{{ mission.user.mobile }}<br/>{{ mission.user.username }}</td>
+                                <td>
+                                    <ul>
+                                        {% for item in mission.template_data %}
+                                            <li>{{ item.name }} : {{ item.val }} </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% for stopover in mission.stopovers.all %}
+                                        <small>{{ stopover }}</small><br/>
+                                    {% endfor %}
+                                    <small>{{ mission.final_address }}</small><br/>
+                                    <small>{{ mission.due_datetime }}</small><br/>
+                                </td>
+                                <td>
+                                    <ul>
+                                        {% for t in mission.timeline %}
+                                            {% if forloop.counter > 1 %}
+                                                <li>[{{t.0}}] {{t.1.username}} - {{t.2}} </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                                <td>{{ mission.get_state_display }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5">
+                                    <p class="alert alert-soft-info text-center mt-3">
+                                        {% if request.GET.q %}
+                                            검색된 미션이 없습니다.
+                                        {% else %}
+                                            이 미션 API로 요청된 미션이 없습니다.
+                                        {% endif %}
+                                    </p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- End Table -->
+
+        {% if is_paginated %}
+            {% include 'biz/include/pagination.html' %}
+        {% endif %}
+
+    </div>
+    <!-- End Card -->
+{% endblock %}

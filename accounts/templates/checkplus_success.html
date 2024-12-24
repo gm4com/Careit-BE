@@ -1,0 +1,24 @@
+﻿<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>NICE평가정보 - CheckPlus 안심본인인증</title>
+	<script>
+		var result = {{ result }};
+		setTimeout(()=>{
+		   try{
+			  if(typeof(cordova_iab) === 'undefined') { var cordova_iab = window.webkit.messageHandlers.cordova_iab;}
+			  cordova_iab.postMessage(JSON.stringify(result));
+		   }
+		   catch(e){
+			  if(opener){
+				 opener.window.postMessage(JSON.stringify(result),'*');
+			  }
+			  window.postMessage(JSON.stringify(result),'*');
+		   }
+		},100);
+	</script>
+</head>
+<body>
+</body>
+</html>

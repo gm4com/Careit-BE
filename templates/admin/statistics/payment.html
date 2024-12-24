@@ -1,0 +1,47 @@
+{% extends 'admin/statistics/base.html' %}
+{% load dashboard cache %}
+
+
+{% block content-stats %}
+
+	{% cache 4000 payment_stat request.GET.preset request.GET.start request.GET.end %}
+	<div class="row">
+		<div class="col-12">
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">결제 현황</h3>
+			{% chart 'PaymentDashboard' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">결제 건수 <small>(요청일 기준)</small></h3>
+			{% chart 'PaymentDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">결제 금액 <small>(요청일 기준)</small></h3>
+			{% chart 'PaymentSumDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">포인트 상품권 건수 <small>(발생일 기준)</small></h3>
+			{% chart 'VoucherDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">포인트 금액 <small>(발생일 기준)</small></h3>
+			{% chart 'PointSumDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">캐쉬 금액 <small>(발생일 기준)</small></h3>
+			{% chart 'CashSumDailyChart' %}
+
+			<hr class="mt-5 mb-5" />
+
+		</div>
+	</div>
+	{% endcache %}
+
+{% endblock %}

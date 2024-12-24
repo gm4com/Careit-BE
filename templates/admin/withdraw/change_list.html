@@ -1,0 +1,68 @@
+{% extends 'admin/change_list.html' %}
+
+
+{% block object-tools-items %}
+	{{ block.super }}
+
+	<li>
+		<form action="{% url 'admin:payment_withdraw_download_excel' %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+			<div class="input-group" id="key-file-upload">
+				<div class="input-group-prepend">
+					<span class="btn border-primary text-secondary"><i class="fa fa-lg fa-file-excel-o text-success"></i></span>
+					<input type="number" class="btn border-primary text-primary" name="year" id="year-field" maxlength="4" placeholder="년" required />
+					<input type="number" class="btn border-primary text-primary" name="month" id="month-field" maxlength="2" placeholder="월" required />
+				</div>
+				<select class="custom-select border-primary text-secondary" name="xls_type" id="xls_type">
+					<option value="all">월별 내역 (전체)</option>
+					<option value="requested">월별 미처리 요청내역</option>
+					<option value="done_with_id"><i class="fa fa-lg fa-file-excel-o text-success"></i> 월별 인출완료 내역 (주민번호 포함)</option>
+				</select>
+				<div class="custom-file border-primary text-secondary" id="key-file-wrapper" style="display: none;">
+					<input type="file" name="key" class="custom-file-input" id="excel-file-field" />
+					<label class="custom-file-label btn border-primary text-primary" for="excel-file-field" aria-describedby="key-file-upload">암호 키파일</label>
+				</div>
+				<div class="input-group-append">
+					<button class="btn btn-outline-primary" id="key-file-upload-btn">다운로드</button>
+				</div>
+			</div>
+		</form>
+	</li>
+
+{% endblock %}
+
+
+{% block extrastyle %}
+	{{ block.super }}
+	<style>
+		#year-field {
+			width: 100px;
+		}
+		#month-field {
+			width: 70px;
+		}
+		#key-file-upload label:after {
+			content: none;
+		}
+		.custom-select {
+			font-size: 0.88rem;
+		}
+	</style>
+{% endblock %}
+
+
+{% block after_script %}
+<script type="application/javascript">
+    $('input#excel-file-field').change(function(e){
+        var fileName = e.target.files[0].name;
+        $('.custom-file-label').html(fileName);
+    });
+    $('select#xls_type').change(function(e){
+    	var xls_type = $(this).val();
+    	if (xls_type == 'done_with_id') {
+			$('#key-file-wrapper').show();
+		} else {
+			$('#key-file-wrapper').hide();
+		}
+    });
+</script>
+{% endblock %}

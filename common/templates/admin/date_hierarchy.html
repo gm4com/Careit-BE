@@ -1,0 +1,30 @@
+{% load i18n %}
+{% if show %}
+<div class="xfull">
+<ul class="toplinks">
+{% block date-hierarchy-toplinks %}
+{% block date-hierarchy-back %}
+{% if back %}<li class="date-back"><a href="{{ back.link }}">&lsaquo; {{ back.title }}</a></li>{% endif %}
+{% endblock %}
+{% block date-hierarchy-choices %}
+{% for choice in choices %}
+<li> {% if choice.link %}<a href="{{ choice.link }}">{% endif %}{{ choice.title }}{% if choice.link %}</a>{% endif %}</li>
+{% endfor %}
+{% endblock %}
+{% endblock %}
+</ul>
+{% trans 'All dates' as all_dates %}
+{% if back %}{{ cl.request.user }}
+	{% if back.title == all_dates %}
+		<h4>{{ choices.0.title|slice:5 }}</h4>
+	{% elif back.title|length_is:4 %}
+		<h4>{{ back.title|slice:4 }}년 {{ choices.0.title|slice:3 }}</h4>
+	{% else %}
+		<h4>{{ back.title|slice:6 }} {{ choices.0.title }}</h4>
+	{% endif %}
+{% else %}
+		<h4>{{ all_dates }}</h4>
+{% endif %}
+<br class="clear">
+</div>
+{% endif %}

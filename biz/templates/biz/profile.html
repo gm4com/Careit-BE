@@ -1,0 +1,100 @@
+{% extends 'biz/base.html' %}
+{% load static %}
+{% load biz_front %}
+
+
+{% block title %}애니비즈 기업정보{% endblock %}
+
+{% block content %}
+    <!-- Content -->
+    <div class="row justify-content-lg-center">
+        <div class="col-lg-12">
+            <!-- Profile Header -->
+            <div class="text-center mb-5">
+                <h1 class="page-header-title">
+                    {{ partnership.name }}
+                    {% if partnership.state == 'activated' %}
+                        <i class="tio-verified tio-lg text-success" data-toggle="tooltip"
+                           data-placement="top" title="" data-original-title="{{ partnership.state|get_request_accept_status_text }}"></i>
+                    {% endif %}
+                </h1>
+
+            </div>
+            <!-- End Profile Header -->
+            {% if  partnership.state != 'activated' %}
+                <div class="alert alert-soft-danger text-center" role="alert">
+                    <h3 class="text-danger">현재 애니비즈 [ {{ partnership.state|get_request_accept_status_text }} ] 상태 입니다!<br>
+                        {% if partnership.state == 'requested' %}
+                            <small>심사는 영업일 기준 최대 7일 소요될 수 있습니다.</small>
+                        {% endif %}
+                    </h3>
+                </div>
+            {% endif %}
+
+            <div class="row">
+
+                <div class="col-lg-12">
+                    <!-- Card -->
+                    <div class="card mb-3 mb-lg-5" id="profile">
+                        <div class="card-header">
+                            <h2 class="card-title h4">기본 정보</h2>
+                        </div>
+
+                        <!-- Body -->
+                        <div class="card-body">
+                            <!-- Form Group -->
+                            <div class="row form-group">
+                                <label for="emailLabel" class="col-sm-3 col-form-label input-label">협력사명</label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" value="{{ partnership.name }}" disabled="disabled">
+                                </div>
+                            </div>
+                            <!-- End Form Group -->
+
+                            <!-- Form Group -->
+                            <div class="row form-group">
+                                <label for="organizationLabel"
+                                       class="col-sm-3 col-form-label input-label">사업자번호 </label>
+
+                                <div class="col-sm-9">
+                                    <input class="form-control" value="{{ partnership.business_number|default_if_none:'-' }}"
+                                           disabled="disabled">
+                                </div>
+                            </div>
+                            <!-- End Form Group -->
+
+                            <!-- Form Group -->
+                            <div class="row form-group">
+                                <label for="addressLine1Label" class="col-sm-3 col-form-label input-label">전화번호</label>
+
+                                <div class="col-sm-9">
+                                    <input class="form-control" value="{{ partnership.tel|default_if_none:'-' }}" disabled="disabled">
+                                </div>
+                            </div>
+                            <!-- End Form Group -->
+
+                            <!-- Form Group -->
+                            <div class="row form-group">
+                                <label for="addressLine1Label" class="col-sm-3 col-form-label input-label">소재지</label>
+
+                                <div class="col-sm-9">
+                                    <input class="form-control" value="{{ partnership.address_detail|default_if_none:'-' }}"
+                                           disabled="disabled">
+                                </div>
+                            </div>
+                            <!-- End Form Group -->
+
+                            {{ partnership.business_registration_photo }}
+                            <!-- End Form -->
+                        </div>
+                        <!-- End Body -->
+                    </div>
+                    <!-- End Card -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- End Row -->
+    <!-- End Content -->
+{% endblock %}

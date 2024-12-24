@@ -1,0 +1,32 @@
+{% extends 'admin/statistics/base.html' %}
+{% load dashboard cache %}
+
+
+{% block content-stats %}
+
+	{% cache 4000 finance_stat request.GET.preset request.GET.start request.GET.end %}
+	<div class="row">
+		<div class="col-12">
+
+			<p>결제일시를 기준으로 조회 기간내 유효결제액을 대상으로 계산한 결과입니다.</p>
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">손익계산</h3>
+			{% chart 'FinanceDashboard' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">참고지표</h3>
+			{% chart 'AdditionalDataDashboard' %}
+
+			<hr class="mt-5 mb-5" />
+
+			<h3 class="text-center">결제액</h3>
+			{% chart 'SalesDailyChart' %}
+
+		</div>
+	</div>
+	{% endcache %}
+
+{% endblock %}

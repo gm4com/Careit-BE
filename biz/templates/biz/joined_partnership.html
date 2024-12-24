@@ -1,0 +1,47 @@
+{% extends 'biz/account_base.html' %}
+{% load static %}
+{% load biz_front %}
+
+
+{% block title %}애니비즈 선택{% endblock %}
+
+{% block content %}
+    <div class="w-100 pt-10 pt-lg-7 pb-7" style="max-width: 25rem;">
+        <div class="text-center mb-5">
+            <h1 class="display-4">애니비즈 선택</h1>
+        </div>
+
+        {% for partnership_user in  object_list %}
+            <a class="text-secondary" href="{% url 'biz:dashboard' partnership_user.partnership.code %}">
+                <!-- Card -->
+                <div class="card my-3">
+                    <div class="card-body row">
+                        <div class="col-3 text-right">
+                              <span class="badge badge-soft-{{ partnership_user.partnership.state|get_request_accept_status_style_class }}">
+                              {{ partnership_user.partnership.state|get_request_accept_status_text }}
+                              </span>
+                        </div>
+                        <div class="col-9">
+                            <span class="jd-block display-5 mb-2">{{ partnership_user.partnership.name }}</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Card -->
+            </a>
+        {% endfor %}
+
+        <div class="text-center pt-3">
+            <span class="divider text-muted mb-4">OR</span>
+            <p>아직 애니비즈 신청하지 않으셨나요?</p>
+        </div>
+
+        <!-- Join -->
+        <a class="btn btn-lg btn-block btn-white mb-4" href="{% url 'biz:join' %}">
+            <span class="d-flex justify-content-center align-items-center">
+              애니비즈 가입
+            </span>
+        </a>
+        <!-- End Join -->
+
+    </div>
+{% endblock %}

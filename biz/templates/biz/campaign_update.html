@@ -1,0 +1,178 @@
+{% extends 'biz/base.html' %}
+{% load static %}
+
+
+{% block title %}캠페인 업데이트{% endblock %}
+
+{% block add_css %}
+    <link rel="stylesheet" href="{% static 'biz/vendor/flatpickr/dist/flatpickr.min.css' %}">
+    <link rel="stylesheet" href="{% static 'biz/vendor/@yaireo/tagify/dist/tagify.css' %}">
+{% endblock %}
+
+{% block content %}
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="row align-items-end">
+            <div class="col-sm mb-2 mb-sm-0">
+                <h1 class="page-header-title">캠페인 업데이트</h1>
+            </div>
+        </div>
+    </div>
+    <!-- End Page Header -->
+
+    <div class="row">
+        <div class="col-lg-8">
+            <form method="POST" enctype="multipart/form-data" onsubmit="return do_submit()" id="upload_form">
+                {% csrf_token %}
+                <!-- Card -->
+                <div class="card mb-3 mb-lg-5">
+                    <!-- Header -->
+                    <div class="card-header">
+                        <h4 class="card-header-title">캠페인 정보 입력</h4>
+                    </div>
+                    <!-- End Header -->
+
+                    <!-- Body -->
+                    <div class="card-body" id="campaign_form_body">
+
+                        {% include 'biz/include/campaign_form.html' %}
+
+                        <!-- Form Group -->
+                        <div class="row">
+                            <label for="zipCodeLabel" class="col-sm-3 col-form-label input-label">질문 <small
+                                    class="text-danger">*</small></label>
+                            <div class="col-sm-9">
+                                <!-- Step -->
+                                <ul class="step m-0">
+                                    {% for question in questions %}
+                                        <li class="step-item">
+                                            <div class="step-content-wrapper">
+                                                <span class="step-icon step-icon-soft-primary">{{ forloop.counter }}</span>
+                                                <div class="step-content">
+                                                    <h4>
+                                                        {{ question.title }}
+                                                        {% if question.is_required %}
+                                                            <small class="badge badge-soft-danger">필수</small>
+                                                        {% endif %}
+                                                    </h4>
+                                                    <p class="step-text">
+                                                        {{ question.description }}<br>
+                                                        {% if  question.options %}
+                                                            <small>옵션 : {{ question.options }}
+                                                        {% endif %}
+                                                        {% if  question.has_etc_input %}
+                                                            <small>+ 기타</small>
+                                                        {% endif %}
+                                                        </small>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                                <!-- End Step -->
+                            </div>
+                        </div>
+                        <!-- End Form Group -->
+                    </div>
+                    <!-- Body -->
+                </div>
+                <!-- End Card -->
+
+                <div class="d-flex justify-content-end d-print-none">
+                    <button class="btn btn-primary">
+                        <i class="tio-checkmark-circle-outlined mr-1"></i> 캠페인 수정
+                    </button>
+                </div>
+            </form>
+        </div>
+        <div class="col-lg-4">
+
+            {% include 'biz/include/campaign_notification.html' %}
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block add_js %}
+    <script src="{% static 'biz/vendor/flatpickr/dist/flatpickr.min.js' %}"></script>
+    <script src="{% static 'biz/vendor/@yaireo/tagify/dist/tagify.min.js' %}"></script>
+
+    <script>
+        function readURL(input, location_number) {
+            let obj = document.getElementById('preview_' + location_number)
+            if (input.files && input.files[0]) {
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    obj.src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                if (campaign_form_body_vue.banners.hasOwnProperty(location_number)) {
+                    obj.src = campaign_form_body_vue.banners[location_number]['image'];
+                } else {
+                    obj.src = "{% static 'biz/img/preview/900x400_img.jpg'%}";
+                }
+            }
+        }
+
+        function do_submit() {
+             let location = [];
+             let has_image = false
+             $images.each(function (item, data){
+                 let location_number = data.id.replace(/[^0-9]/g, '');
+                 location.push({'location_number':location_number, 'file':data.files.length})
+                 if(data.files[0]){has_image=true}
+             })
+            $('#id_campaign_questions').text(JSON.stringify(campaign_form_body_vue.questions))
+            $('#id_location').val(JSON.stringify(location))
+            return true
+        }
+
+        let campaign_form_body_vue = new Vue({
+            el: '#campaign_form_body',
+            delimiters: ['[[', ']]'],
+            data: {
+                banners: [],
+                request_image: false,
+                uploadFiles: [],
+            },
+            methods: {
+                get_files: function (event){
+                    let uploadFiles = this.uploadFiles
+                    let $tmp_file = document.querySelector('#tmp_file');
+                     uploadFiles.push($tmp_file);
+                }
+            },
+            computed: {
+            }
+        })
+
+        campaign_form_body_vue.banners = {{ old_banner_dict|safe }}
+
+        const $images = $('.images')
+        $images.each(function (item, data) {
+            let location_number = data.id.replace(/[^0-9]/g, '');
+            let obj = document.getElementById('preview_' + location_number)
+            if (campaign_form_body_vue.banners.hasOwnProperty(location_number)) {
+                obj.src = campaign_form_body_vue.banners[location_number]['image'];
+            } else {
+                obj.src = "{% static 'biz/img/preview/900x400_img.jpg'%}";
+            }
+        })
+
+        $(document).on('ready', function () {
+            // INITIALIZATION OF FLATPICKR
+            // =======================================================
+            $('.js-flatpickr').each(function () {
+                $.HSCore.components.HSFlatpickr.init($(this));
+            });
+            // INITIALIZATION OF TAGIFY
+            // =======================================================
+            $('.js-tagify').each(function () {
+                var tagify = $.HSCore.components.HSTagify.init($(this));
+            });
+        });
+    </script>
+{% endblock %}

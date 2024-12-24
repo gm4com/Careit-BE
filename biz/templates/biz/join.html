@@ -1,0 +1,126 @@
+{% extends 'biz/account_base.html' %}
+{% load static %}
+
+
+{% block title %}애니비즈 신청{% endblock %}
+
+{% block content %}
+    <div class="w-100 pt-10 pt-lg-7 pb-7" style="max-width: 25rem;">
+        <!-- Form -->
+        <form class="js-validate" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="text-center mb-5">
+                <h1 class="display-4">애니비즈 신청</h1>
+            </div>
+
+            {% include 'biz/include/messages.html' %}
+
+            <!-- Form Group -->
+            <div class="js-form-message form-group">
+                <label class="input-label" for="id_business_number">
+                    사업자번호 <small class="text-danger"> * 숫자만</small>
+                </label>
+                <div class="input-group input-group-merge">{{ form.business_number }}</div>
+                {% if form.business_number.errors %}
+                    <div id="business_number-error" class="invalid-feedback" style="display: block">
+                        <span>{{ form.business_number.errors.as_text }}</span>
+                    </div>
+                {% endif %}
+            </div>
+            <!-- End Form Group -->
+
+            <!-- Form Group -->
+            <div class="js-form-message form-group">
+                <label class="input-label" for="id_biz_company">회사명/ 법인명</label>
+                <div class="input-group input-group-merge">{{ form.name }}</div>
+            </div>
+            <!-- End Form Group -->
+
+            <!-- Form Group -->
+            <div class="js-form-message form-group">
+                <label class="input-label" for="id_tel">기업 전화번호</label>
+                <div class="input-group input-group-merge">{{ form.tel }}</div>
+            </div>
+            <!-- End Form Group -->
+
+            <!-- Form Group -->
+            <div class="js-form-message form-group">
+                <label class="input-label" for="id_code">
+                    사용자 코드 <small class="text-danger"> * 영문,숫자</small>
+                </label>
+                <div class="input-group input-group-merge">{{ form.code }}</div>
+                {% if form.code.errors %}
+                    <div id="code-error" class="invalid-feedback" style="display: block">
+                        <span>{{ form.code.errors.as_text }}</span>
+                    </div>
+                {% endif %}
+            </div>
+            <!-- End Form Group -->
+
+            <!-- Form Group -->
+            <div class="js-form-message form-group">
+                <label class="input-label" for="id_address_detail">
+                    기업 주소 <span class="btn btn-soft-primary ml-2" onclick="load_daum_map()">주소 검색</span>
+                </label>
+                <div class="input-group input-group-merge">
+                    {{ form.address_detail }}
+                    {{ form.sido }}
+                    {{ form.sigungu }}
+                    <input type="hidden" name="state" value="1">
+                </div>
+            </div>
+            <!-- End Form Group -->
+
+            <!-- Form Group -->
+            <div class="js-form-message form-group">
+                <label class="input-label" for="id_business_registration_photo">사업자등록증 이미지</label>
+                <div class="input-group input-group-merge">{{ form.business_registration_photo }}</div>
+                {% if form.business_registration_photo.errors %}
+                    <div id="business_registration_photo-error" class="invalid-feedback"
+                         style="display: block">
+                        <span>{{ form.business_registration_photo.errors.as_text }}</span>
+                    </div>
+                {% endif %}
+            </div>
+            <!-- End Form Group -->
+            <button type="submit" class="btn btn-lg btn-block btn-primary">신청서 제출</button>
+        </form>
+        <!-- End Form -->
+
+        <div class="text-center pt-3">
+            <span class="divider text-muted mb-4">OR</span>
+            <p>이미 애니비즈에 가입하셨나요?</p>
+        </div>
+
+        <!-- Login -->
+        <a class="btn btn-lg btn-block btn-white mb-4" href="{% url 'biz:login' %}">
+            <span class="d-flex justify-content-center align-items-center">
+              애니비즈 로그인
+            </span>
+        </a>
+        <!-- End Login -->
+    </div>
+{% endblock %}
+
+{% block add_js %}
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        function load_daum_map() {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    let roadAddr = data.roadAddress; // 도로명 주소 변수
+
+                    if (data.sido) {
+                        document.getElementById("id_sido").value = data.sido
+                    }
+                    if (data.sigungu) {
+                        document.getElementById("id_sigungu").value = data.sigungu
+                    }
+
+                    // 우편번호와 주소 정보를 해당 필드에 넣는다.
+                    document.getElementById("id_address_detail").value = roadAddr;
+                }
+            }).open();
+        }
+    </script>
+{% endblock %}

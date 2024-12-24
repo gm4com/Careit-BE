@@ -1,0 +1,72 @@
+{% extends 'biz/base.html' %}
+{% load static %}
+{% load biz_front %}
+
+{% block title %}기업미션 리스트{% endblock %}
+
+{% block add_css %}
+    <style>
+        .thumbnail_banner_img {
+            max-height: 80px;
+            max-width: 80px;
+        }
+        .max-w-400 {
+            max-width: 400px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+        <div class="row align-items-end">
+            <div class="col-sm mb-2 mb-sm-0">
+                <h1 class="page-header-title">기업미션</h1>
+            </div>
+            {% if 'missions' in partnership.services %}
+                <div class="col-sm-auto">
+                    <a class="btn btn-primary" href="{#{% url 'biz:campaign-create' partnership.code %}#}">
+                        <i class="tio-add-square-outlined mr-1"></i> 미션 생성
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if 'missions' in partnership.services %}
+
+        <div class="card">
+            <div class="table-responsive datatable-custom">
+                <div id="datatable_wrapper" class="dataTables_wrapper no-footer">
+                    <table class="table table-lg table-borderless table-thead-bordered table-nowrap table-align-middle card-table dataTable no-footer"
+                        role="grid" aria-describedby="datatable_info">
+                        <thead class="thead-light">
+                            <tr role="row">
+                                <th>제목</th>
+                                <th class="max-w-400">배너 이미지</th>
+                                <th>수행내용 요약</th>
+                                <th>요청 일시</th>
+                                <th>상태</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% comment %} {% if is_paginated %}
+                {% include 'biz/include/pagination.html' %}
+            {% endif %} {% endcomment %}
+
+        </div>
+
+    {% else %}
+        기업미션은 애니맨의 헬퍼풀을 이용하여 인력의 수급과 관리를 유연하게 활용할 수 있는 기능입니다.<br/>
+        대량으로 미션을 내거나 여러 지역에서 여러 헬퍼를 동시에 모집할 수 있습니다.<br/>
+        애니비즈 정기결제 신청 후 이용가능합니다.
+        <br/><br/>
+        <a href="{% url 'biz:service-request' partnership.code 'missions' %}" class="btn btn-sm btn-primary">기업미션 사용 활성화</a>
+    {% endif %}
+
+{% endblock %}

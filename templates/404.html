@@ -1,0 +1,16 @@
+{% extends '500.html' %}
+{% load i18n %}
+
+
+{% block title %}Not Found{% endblock %}
+{% block meta-title %}Not Found{% endblock %}
+
+
+{% block body %}
+    <div class="error-container">
+        <div class="error-content">
+            <h1>404</h1>
+            <p class="error-title">{% trans 'Page Not Found' %}</p>
+        </div>
+    </div>
+{% endblock %}

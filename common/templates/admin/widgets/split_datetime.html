@@ -1,0 +1,10 @@
+<div class="datetime" style="display: flex;">
+	<div class="row" style="min-width: 500px;">
+		<div class="col-12">
+			{{ date_label }} {% with widget=widget.subwidgets.0 %}{% include widget.template_name %}{% endwith %}<br>
+		</div>
+		<div class="col-12">
+			{{ time_label }} {% with widget=widget.subwidgets.1 %}{% include widget.template_name %}{% endwith %}
+		</div>
+	</div>
+</div>

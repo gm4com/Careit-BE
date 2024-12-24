@@ -1,0 +1,26 @@
+{% extends "admin/change_form_split.html" %}
+{% load admin_modify admin_urls internal common %}
+
+
+{% block all_field_sets %}
+	{{ block.super }}
+	{% if is_popup %}
+		<script>
+			document.getElementsByClassName('field-user')[0].remove();
+		</script>
+		<input type="hidden" name="user" id="id_user" value="{{ request.GET.user_id }}">
+	{% endif %}
+{% endblock %}
+
+
+{% block after_script %}
+	{% if is_popup %}
+		<script>
+			$('#point_form').on('submit', function (e) {
+{#				window.opener.location.reload(true);#}
+				window.opener.location.href = window.opener.location.href;
+				return true;
+			});
+		</script>
+	{% endif %}
+{% endblock %}

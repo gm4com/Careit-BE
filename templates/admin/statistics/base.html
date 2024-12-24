@@ -1,0 +1,124 @@
+{% extends 'admin/base_site.html' %}
+{% load dashboard %}
+
+
+{% block extrahead %}
+	<style>
+		.list-group-item.active {
+			background-color: #919ca6;
+			border-color: #919ca6;
+		}
+		.list-group-item.active a {
+			color: #fff;
+		}
+		.date-picker-wrapper {
+			z-index: 5 !important;
+		}
+	</style>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+	<script>
+
+		// 문자처리
+		function addCommas(nStr)
+		{
+		    nStr += '';
+		    x = nStr.split('.');
+		    x1 = x[0];
+		    x2 = x.length > 1 ? '.' + x[1] : '';
+		    var rgx = /(\d+)(\d{3})/;
+		    while (rgx.test(x1)) {
+		        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+		    }
+		    return x1 + x2;
+		}
+
+		// 글로벌 셋팅
+		// Chart.defaults.global.scale.yAxes.ticks.beginAtZero = true;
+		Chart.defaults.global.tooltips.titleFontStyle = '100';
+		Chart.defaults.global.tooltips.titleFontSize = 20;
+		Chart.defaults.global.tooltips.bodyFontSize = 16;
+		Chart.defaults.global.tooltips.bodyFontFamily = '"Helvetica Neue",Helvetica,Arial,sans-serif';
+		Chart.defaults.global.tooltips.bodyFontStyle = '100';
+		Chart.defaults.global.elements.line.tension = 0.1;
+
+	</script>
+{% endblock %}
+
+
+{% block breadcrumb-items %}
+	 &rsaquo; 통계
+{% endblock %}
+
+
+{% block content_title %}
+    <div class="btn-group" id="date-range-buttons">
+    </div>
+	{{ block.super }}
+{% endblock %}
+
+
+{% block content %}
+	<div class="row">
+		<div class="col-12 col-lg-3 col-xl-2 order-lg-last order-xl-last">
+
+			<div class="card bg-light">
+				<div class="card-body">
+					<h5 class="card-title"><small>조회 항목</small><br/>{{ title }}</h5>
+				</div>
+				<ul class="list-group list-group-flush">
+					<li class="list-group-item{% if slug == 'user' %} active{% endif %}"><a href="/admin/statistics/user/?{{ request.GET.urlencode }}">회원</a></li>
+					<li class="list-group-item{% if slug == 'mission' %} active{% endif %}"><a href="/admin/statistics/mission/?{{ request.GET.urlencode }}">미션</a></li>
+					<li class="list-group-item{% if slug == 'payment' %} active{% endif %}"><a href="/admin/statistics/payment/?{{ request.GET.urlencode }}">결제</a></li>
+					<li class="list-group-item{% if slug == 'recommend' %} active{% endif %}"><a href="/admin/statistics/recommend/?{{ request.GET.urlencode }}">추천 시스템</a></li>
+					<li class="list-group-item{% if slug == 'finance' %} active{% endif %}"><a href="/admin/statistics/finance/?{{ request.GET.urlencode }}">비용과 수익</a></li>
+				</ul>
+				<div class="card-body">
+					<h5 class="card-title"><small>조회 기간</small><br/>{{ start_date }}{% if start_date != end_date %}<br/> ~ {{ end_date }}{% endif %}</h5>
+				</div>
+				<ul class="list-group list-group-flush">
+				    <li class="list-group-item{% if not request.GET.preset and request.GET.start %} active{% endif %}"><a href="javascript:void(0);" id="picker">직접 입력</a></li>
+				    <li class="list-group-item{% if request.GET.preset == 'week' %} active{% endif %}"><a href="?preset=week">최근 일주일</a></li>
+				    <li class="list-group-item{% if request.GET.preset == 'month' %} active{% endif %}"><a href="?preset=month">최근 한달</a></li>
+				    <li class="list-group-item{% if request.GET.preset == '3month' %} active{% endif %}"><a href="?preset=3month">최근 3개월</a></li>
+				    <li class="list-group-item{% if request.GET.preset == 'ppmonth' %} active{% endif %}"><a href="?preset=ppmonth">지지난달</a></li>
+				    <li class="list-group-item{% if request.GET.preset == 'prevmonth' %} active{% endif %}"><a href="?preset=prevmonth">지난달</a></li>
+				    <li class="list-group-item{% if request.GET.preset == 'thismonth' %} active{% endif %}"><a href="?preset=thismonth">이번달</a></li>
+				    <li class="list-group-item{% if request.GET.preset == 'yesterday' %} active{% endif %}"><a href="?preset=yesterday">어제</a></li>
+				    <li class="list-group-item{% if request.GET.preset == 'today' or not request.GET %} active{% endif %}"><a href="?preset=today">오늘</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="col-12 col-lg-9 col-xl-10 order-lg-first order-xl-first">
+			{% block content-stats %}{% endblock %}
+		</div>
+	</div>
+
+	<button type="button" class="d-none" id="fire-confirm" data-toggle="modal" data-target="#confirm-modal"
+        data-title="조회 기간 변경" data-content="" data-btn-text="조회" data-btn-class="primary" data-link="">
+	</button>
+
+{% endblock %}
+
+
+{% block after_script %}
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js" integrity="sha512-qTXRIMyZIFb8iQcfjXWCO8+M5Tbc38Qi5WzdPOYZHIlZpzBHG3L3by84BBBOiRGiEb7KKtAOAs5qYdUiZiQNNQ==" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-date-range-picker/0.20.0/jquery.daterangepicker.min.js" integrity="sha512-q6O0Y6bE1SVepY2I2r8dmUKRb/Bd7juTS8vP4rVXTJnLoDSPzam9bswVNJEZ2YuUM2mUmOsCohi44ZWuCYD7JA==" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-date-range-picker/0.20.0/daterangepicker.css" integrity="sha512-rl6l4lw3xK70bXQTEm+0py1Frc9yXsf/nhsm7eM2+X6movmsFGKPJRpwIJZWkLAqKauVxUUjiKnTV6+PcRC0cg==" crossorigin="anonymous" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-date-range-picker/0.20.0/daterangepicker.min.css" integrity="sha512-nmvKZG8E3dANbZAsJXpdK6IqpfEXbPNbpe3M3Us1qTipq74IpTRShbpCf8lJFapB7e0MkDbNDKxLjS1VWt2vVg==" crossorigin="anonymous" />
+	<script>
+	    $("#picker").dateRangePicker({ language : 'ko' }).on('datepicker-change',function(event,obj)
+	    {
+	        var $confirm = $('#fire-confirm');
+	        var start = moment(obj.date1).format('Y-M-D');
+	        var end = moment(obj.date2).format('Y-M-D');
+	        if (start === end) {
+	        	$confirm.data('content', moment(obj.date1).format('YYYY년 M월 D일의 데이터를 조회합니다.'));
+	        } else {
+		        $confirm.data('content', moment(obj.date1).format('YYYY년 M월 D일부터 ') + moment(obj.date2).format('YYYY년 M월 D일까지의 데이터를 조회합니다.'));
+	        }
+	        $confirm.data('link', '//'+window.location.host + window.location.pathname + '?start='+start+'&end='+end);
+	        $confirm.click();
+	    })
+	</script>
+{% endblock %}
